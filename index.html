@@ -127,6 +127,22 @@ nav,footer{background:#080a0d!important}
   padding:0 !important;
 }</style>
 
+
+<style>
+/* v13: カウンター数字をタップして直接入力 */
+#ct .editable-count{
+  cursor:pointer !important;
+  user-select:none !important;
+  -webkit-user-select:none !important;
+  border-radius:8px !important;
+  transition:background .12s ease, box-shadow .12s ease !important;
+}
+#ct .editable-count:active{
+  background:#ffffff14 !important;
+  box-shadow:inset 0 0 0 1px #ffffff30 !important;
+}
+</style>
+
 </head><body><div class="wrap">
 <h1>JUGGLER SETTING ANALYZER</h1><div class="sub">全機種校正版 / 機種別尤度 × 詳細REG × 実測ぶどう × 差枚逆算（弱補助）</div>
 <div class="tabs"><button onclick="tab('an')">設定推測</button><button class="secondary" onclick="tab('ct')">実戦カウンター</button><button class="secondary" onclick="tab('th')">展開分析</button><button class="secondary" onclick="showSpec()">📊 スペック</button></div>
@@ -145,21 +161,21 @@ nav,footer{background:#080a0d!important}
 <div class="card"><div class="muted">実戦カウンター ＋ 展開分析</div><div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:7px">
 <img src="icon-192.png" alt="" style="width:52px;height:52px;border-radius:12px;border:1px solid #747b83;box-shadow:0 3px 12px #000">
 <div class="big" style="font-size:22px">JUGGLER ANALYZER</div></div>
-<div class="muted" style="font-weight:800;letter-spacing:.08em">LIVE COUNTER × 展開分析 <span style="font-size:10px;color:#7f8994">v12.9</span></div><div class="muted">ここだけ操作すれば、通常カウントと展開分析へ同時に記録します。</div></div>
+<div class="muted" style="font-weight:800;letter-spacing:.08em">LIVE COUNTER × 展開分析 <span style="font-size:10px;color:#7f8994">v13</span></div><div class="muted">ここだけ操作すれば、通常カウントと展開分析へ同時に記録します。</div></div>
 <div class="card"><div class="grid"><div><label>現在G数</label><input id="liveG" type="number" value="0"></div><div><label>現在差枚</label><input id="liveDiff" type="number" value="0"></div><div><label>本日最高差枚</label><input id="liveMax" type="number" value="0"></div></div><div class="muted" style="margin-top:8px">G数を台の表示に合わせてから小役を押せます。連続小役を正確に見る時は、そのまま連続タップしてください。</div></div>
 <div class="card live-counter-card">
 <div class="countgrid live-grid">
-  <div class="counter grape"><div>🍇 ぶどう</div><div class="num" id="nGrape">0</div><button type="button" onclick="live('G')">＋1</button></div>
-  <div class="counter replay"><div>↻ リプレイ</div><div class="num" id="nReplay">0</div><button type="button" onclick="live('R')">＋1</button></div>
-  <div class="counter cherry"><div>🍒 チェリー</div><div class="num" id="nCherry">0</div><button type="button" onclick="live('C')">＋1</button></div>
+  <div class="counter grape"><div>🍇 ぶどう</div><div class="num editable-count" id="nGrape" role="button" tabindex="0" title="タップして直接入力" onclick="editLiveCount('G')">0</div><button type="button" onclick="live('G')">＋1</button></div>
+  <div class="counter replay"><div>↻ リプレイ</div><div class="num editable-count" id="nReplay" role="button" tabindex="0" title="タップして直接入力" onclick="editLiveCount('R')">0</div><button type="button" onclick="live('R')">＋1</button></div>
+  <div class="counter cherry"><div>🍒 チェリー</div><div class="num editable-count" id="nCherry" role="button" tabindex="0" title="タップして直接入力" onclick="editLiveCount('C')">0</div><button type="button" onclick="live('C')">＋1</button></div>
 
-  <div class="counter bb"><div>BB</div><div class="num" id="nBB">0</div><button type="button" onclick="bonusLive('B')">＋1</button></div>
-  <div class="counter rb"><div>RB</div><div class="num" id="nRB">0</div><button type="button" onclick="bonusLive('RB')">＋1</button></div>
-  <div class="counter cbb"><div>🍒＋BB</div><div class="num" id="nCBB">0</div><button type="button" onclick="chBonusLive('B')">＋1</button></div>
+  <div class="counter bb"><div>BB</div><div class="num editable-count" id="nBB" role="button" tabindex="0" title="タップして直接入力" onclick="editLiveCount('BB')">0</div><button type="button" onclick="bonusLive('B')">＋1</button></div>
+  <div class="counter rb"><div>RB</div><div class="num editable-count" id="nRB" role="button" tabindex="0" title="タップして直接入力" onclick="editLiveCount('RB')">0</div><button type="button" onclick="bonusLive('RB')">＋1</button></div>
+  <div class="counter cbb"><div>🍒＋BB</div><div class="num editable-count" id="nCBB" role="button" tabindex="0" title="タップして直接入力" onclick="editLiveCount('CBB')">0</div><button type="button" onclick="chBonusLive('B')">＋1</button></div>
 
-  <div class="counter crb"><div>🍒＋RB</div><div class="num" id="nCRB">0</div><button type="button" onclick="chBonusLive('RB')">＋1</button></div>
-  <div class="counter miss"><div>💥 ハズレ</div><div class="num" id="nMiss">0</div><button type="button" onclick="live('H')">＋1</button></div>
-  <div class="counter other"><div>その他</div><div class="num" id="nOther">0</div><button type="button" onclick="live('X')">＋1</button></div>
+  <div class="counter crb"><div>🍒＋RB</div><div class="num editable-count" id="nCRB" role="button" tabindex="0" title="タップして直接入力" onclick="editLiveCount('CRB')">0</div><button type="button" onclick="chBonusLive('RB')">＋1</button></div>
+  <div class="counter miss"><div>💥 ハズレ</div><div class="num editable-count" id="nMiss" role="button" tabindex="0" title="タップして直接入力" onclick="editLiveCount('H')">0</div><button type="button" onclick="live('H')">＋1</button></div>
+  <div class="counter other"><div>その他</div><div class="num editable-count" id="nOther" role="button" tabindex="0" title="タップして直接入力" onclick="editLiveCount('X')">0</div><button type="button" onclick="live('X')">＋1</button></div>
 </div>
 <div class="undo-one"><button type="button" onclick="undoLastLive()">↶ 直前のカウントを −1 する</button><div class="muted">最後に入力した1件だけ戻します</div></div>
 </div>
@@ -396,6 +412,49 @@ function recalcSignalResults(){
    if(b){const d=b.g-sig.g;sig.result=d<=100?d:999}
  });
 }
+
+function editLiveCount(type){
+ const labels={G:'ぶどう',R:'リプレイ',C:'チェリー',BB:'BB',RB:'RB',CBB:'チェリー＋BB',CRB:'チェリー＋RB',H:'ハズレ',X:'その他'};
+ const current={
+   G:Number(cv['ぶどう'])||0,
+   R:eventCount('R'),
+   C:Number(cv['チェリー'])||0,
+   BB:Number(cv['BB'])||0,
+   RB:Number(cv['RB'])||0,
+   CBB:Number(cv['チェリー重複BB'])||0,
+   CRB:Number(cv['チェリー重複RB'])||0,
+   H:eventCount('H'),
+   X:eventCount('X')
+ }[type]||0;
+ const raw=prompt(`${labels[type]}のカウントを直接入力`,String(current));
+ if(raw===null)return;
+ if(!/^\d+$/.test(raw.trim())){alert('0以上の整数で入力してください。');return}
+ const n=Math.max(0,parseInt(raw,10));
+
+ // cvで管理するカウンター
+ if(type==='G')cv['ぶどう']=n;
+ if(type==='C')cv['チェリー']=n;
+ if(type==='BB')cv['BB']=n;
+ if(type==='RB')cv['RB']=n;
+ if(type==='CBB')cv['チェリー重複BB']=n;
+ if(type==='CRB')cv['チェリー重複RB']=n;
+
+ // eventで管理するカウンターは件数だけ合わせる。
+ if(['R','H','X'].includes(type)){
+   TH.events=TH.events.filter(e=>e.type!==type);
+   const g=Number(document.getElementById('liveG')?.value)||0;
+   const diff=Number(document.getElementById('liveDiff')?.value)||0;
+   const max=Number(document.getElementById('liveMax')?.value)||0;
+   const base=Date.now();
+   for(let i=0;i<n;i++)TH.events.push({g,type,diff,max,ts:base+i});
+ }
+
+ // 直接編集後は「直前取消」の履歴と実データが一致しなくなるため履歴をクリア。
+ LIVE_HISTORY=[];saveLiveHistory();
+ recalcSignalResults();updateVisibleCounts();persistAll();
+ try{drawLiveSignal();drawTheory()}catch(e){console.error(e)}
+}
+
 function undoLastLive(){
  const h=LIVE_HISTORY.pop(); if(!h)return;
  const gEl=document.getElementById('liveG');
