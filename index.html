@@ -42,6 +42,14 @@ nav,footer{background:#080a0d!important}
 #ct .counter.bb,#ct .counter.cbb{border-color:#d84435!important} #ct .counter.bb button,#ct .counter.cbb button{background:linear-gradient(180deg,#b83a2d,#68180f)!important;border-color:#ff6858!important}
 #ct .counter.rb,#ct .counter.crb{border-color:#258ad0!important} #ct .counter.rb button,#ct .counter.crb button{background:linear-gradient(180deg,#237fbd,#104365)!important;border-color:#54baff!important}
 </style>
+
+<style id="FINAL-COUNTER-COLORS">
+#ct .counter.grape{border-color:#9b42d2!important}#ct .counter.grape button{background:#702091!important;border-color:#b953e8!important}
+#ct .counter.cherry{border-color:#e23845!important}#ct .counter.cherry button{background:#a51f2a!important;border-color:#ef4b58!important}
+#ct .counter.replay{border-color:#2199df!important}#ct .counter.replay button{background:#126fa8!important;border-color:#37adf2!important}
+#ct .counter.bb,#ct .counter.cbb{border-color:#e04a3e!important}#ct .counter.bb button,#ct .counter.cbb button{background:#a83229!important;border-color:#ef6256!important}
+#ct .counter.rb,#ct .counter.crb{border-color:#2e9cdd!important}#ct .counter.rb button,#ct .counter.crb button{background:#176b9f!important;border-color:#48b5f4!important}
+</style>
 </head><body><div class="wrap">
 <h1>JUGGLER SETTING ANALYZER</h1><div class="sub">全機種校正版 / 機種別尤度 × 詳細REG × 実測ぶどう × 差枚逆算（弱補助）</div>
 <div class="tabs"><button onclick="tab('an')">設定推測</button><button class="secondary" onclick="tab('ct')">実戦カウンター</button><button class="secondary" onclick="tab('th')">展開分析</button><button class="secondary" onclick="showSpec()">📊 スペック</button></div>
@@ -265,15 +273,55 @@ function syncLiveNums(){
  let r=document.getElementById('nReplay');if(r)r.textContent=TH.events.filter(e=>e.type==='R').length;
 }
 function live(type){
- let g=(+document.getElementById('liveG').value||0)+1;document.getElementById('liveG').value=g;
- if(type==='G')cv['ぶどう']++; if(type==='C')cv['チェリー']++;
- TH.events.push({g,type,diff:+document.getElementById('liveDiff').value||0,max:+document.getElementById('liveMax').value||0,ts:Date.now()});
- document.getElementById('tg').value=g;document.getElementById('tdiff').value=document.getElementById('liveDiff').value;document.getElementById('tmax').value=document.getElementById('liveMax').value;
- autoSignal();storeC();tstore();syncLiveNums();drawLiveSignal()
+ const gEl=document.getElementById('liveG');
+ const g=(Number(gEl&&gEl.value)||0)+1;
+ if(gEl)gEl.value=g;
+
+ if(type==='G'){
+   cv['ぶどう']=(Number(cv['ぶどう'])||0)+1;
+   const e=document.getElementById('nGrape'); if(e)e.textContent=String(cv['ぶどう']);
+ }
+ if(type==='C'){
+   cv['チェリー']=(Number(cv['チェリー'])||0)+1;
+   const e=document.getElementById('nCherry'); if(e)e.textContent=String(cv['チェリー']);
+ }
+ if(type==='R'){
+   const e=document.getElementById('nReplay');
+   if(e)e.textContent=String((Number(e.textContent)||0)+1);
+ }
+
+ // Visible count is already updated above. Analysis errors must never stop the counter.
+ try{
+   TH.events.push({g,type,diff:Number(document.getElementById('liveDiff')?.value)||0,max:Number(document.getElementById('liveMax')?.value)||0,ts:Date.now()});
+   const tg=document.getElementById('tg'),td=document.getElementById('tdiff'),tm=document.getElementById('tmax');
+   if(tg)tg.value=g;if(td)td.value=document.getElementById('liveDiff')?.value||0;if(tm)tm.value=document.getElementById('liveMax')?.value||0;
+   autoSignal(); tstore();
+ }catch(err){console.error('analysis:',err)}
+ try{localStorage.setItem('jugCounter',JSON.stringify(cv))}catch(err){}
+ try{drawLiveSignal()}catch(err){console.error('signal:',err)}
 }
 function settleLive(g){TH.signals.forEach(s=>{if(s.result==null&&g>=s.g){let d=g-s.g;s.result=d<=100?d:999}})}
-function bonusLive(t){let g=+document.getElementById('liveG').value||0;if(t==='B')cv['BB']++;else cv['RB']++;TH.bonuses.push({g,type:t,ts:Date.now()});settleLive(g);storeC();tstore();syncLiveNums();drawLiveSignal()}
-function chBonusLive(t){cv['チェリー']++;if(t==='B'){cv['BB']++;cv['チェリー重複BB']++}else{cv['RB']++;cv['チェリー重複RB']++}bonusLive(t);cv[t==='B'?'BB':'RB']--;storeC();syncLiveNums()}
+function bonusLive(t){
+ const key=t==='B'?'BB':'RB', id=t==='B'?'nBB':'nRB';
+ cv[key]=(Number(cv[key])||0)+1;
+ const e=document.getElementById(id);if(e)e.textContent=String(cv[key]);
+ const g=Number(document.getElementById('liveG')?.value)||0;
+ try{TH.bonuses.push({g,type:t,ts:Date.now()});settleLive(g);tstore()}catch(err){console.error(err)}
+ try{localStorage.setItem('jugCounter',JSON.stringify(cv))}catch(err){}
+ try{drawLiveSignal()}catch(err){}
+}
+function chBonusLive(t){
+ const bkey=t==='B'?'BB':'RB', ckey=t==='B'?'チェリー重複BB':'チェリー重複RB';
+ const bid=t==='B'?'nBB':'nRB', cid=t==='B'?'nCBB':'nCRB';
+ cv['チェリー']=(Number(cv['チェリー'])||0)+1;
+ cv[bkey]=(Number(cv[bkey])||0)+1;
+ cv[ckey]=(Number(cv[ckey])||0)+1;
+ [['nCherry','チェリー'],[bid,bkey],[cid,ckey]].forEach(([id,k])=>{const e=document.getElementById(id);if(e)e.textContent=String(cv[k])});
+ const g=Number(document.getElementById('liveG')?.value)||0;
+ try{TH.bonuses.push({g,type:t,ts:Date.now()});settleLive(g);tstore()}catch(err){}
+ try{localStorage.setItem('jugCounter',JSON.stringify(cv))}catch(err){}
+ try{drawLiveSignal()}catch(err){}
+}
 function drawLiveSignal(){
  let box=document.getElementById('liveSignal');if(!box)return;
  document.getElementById('tg').value=document.getElementById('liveG').value;document.getElementById('tdiff').value=document.getElementById('liveDiff').value;document.getElementById('tmax').value=document.getElementById('liveMax').value;
