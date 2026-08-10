@@ -233,7 +233,20 @@ nav,footer{background:#080a0d!important}
 }
 </style>
 
-</head><body><div class="wrap">
+<style>
+.analyzer-brand-row{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:7px;min-width:0}
+.analyzer-brand-icon{width:52px;height:52px;flex:0 0 52px;border-radius:12px;border:1px solid #747b83;box-shadow:0 3px 12px #000}
+.analyzer-brand-title{font-family:Georgia,"Times New Roman",serif;font-weight:800;font-size:21px;line-height:1;letter-spacing:.02em;white-space:nowrap;min-width:0}
+@media(max-width:430px){
+ .analyzer-brand-row{gap:6px!important}
+ .analyzer-brand-icon{width:48px!important;height:48px!important;flex-basis:48px!important}
+ .analyzer-brand-title{font-size:clamp(15px,4.15vw,18px)!important;letter-spacing:-.01em!important}
+}
+@media(max-width:375px){
+ .analyzer-brand-icon{width:44px!important;height:44px!important;flex-basis:44px!important}
+ .analyzer-brand-title{font-size:14px!important}
+}
+</style></head><body><div class="wrap">
 <h1>JUGGLER SETTING ANALYZER</h1><div class="sub">全機種校正版 / 機種別尤度 × 詳細REG × 実測ぶどう × 差枚逆算（弱補助）</div>
 <div class="tabs"><button onclick="tab('an')">設定推測</button><button class="secondary" onclick="tab('ct')">実戦カウンター</button><button class="secondary" onclick="tab('th')">展開分析</button><button class="secondary" onclick="showSpec()">📊 スペック</button></div>
 <section id="an"><div class="card"><div class="grid">
@@ -248,10 +261,10 @@ nav,footer{background:#080a0d!important}
 </div>
 </div><div id="out"></div></section>
 <section id="ct" class="hidden">
-<div class="card"><div class="muted">実戦カウンター ＋ 展開分析</div><div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:7px">
-<img src="icon-192.png" alt="" style="width:52px;height:52px;border-radius:12px;border:1px solid #747b83;box-shadow:0 3px 12px #000">
-<div class="big" style="font-size:22px">JUGGLER ANALYZER</div></div>
-<div class="muted" style="font-weight:800;letter-spacing:.08em">LIVE COUNTER × 展開分析 <span style="font-size:10px;color:#7f8994">v22.2</span></div><div class="muted">ここだけ操作すれば、通常カウントと展開分析へ同時に記録します。</div></div>
+<div class="card"><div class="muted">実戦カウンター ＋ 展開分析</div><div class="analyzer-brand-row">
+<img src="icon-192.png" alt="" class="analyzer-brand-icon">
+<div class="analyzer-brand-title"><span>★</span> JUGGLER ANALYZER <span>★</span></div></div>
+<div class="muted" style="font-weight:800;letter-spacing:.08em">LIVE COUNTER × 展開分析 <span style="font-size:10px;color:#7f8994">v22.3</span></div><div class="muted">ここだけ操作すれば、通常カウントと展開分析へ同時に記録します。</div></div>
 <div class="card"><div class="grid">
 <div><label>開始時 総ゲーム数</label><input id="liveStartG" type="number" min="0" value="0"></div>
 <div><label>現在 総ゲーム数</label><input id="liveG" type="number" min="0" value="0"><button type="button" class="mini-g-sync" onclick="syncCurrentG()">台のG数に補正</button><div class="g-quick-row"><button type="button" onclick="advanceBlankG(5)">＋5G</button><button type="button" onclick="advanceBlankG(10)">＋10G</button><button type="button" onclick="advanceBlankG(15)">＋15G</button><button type="button" onclick="advanceBlankG(20)">＋20G</button><button type="button" onclick="advanceBlankG(25)">＋25G</button></div></div>
