@@ -97,7 +97,45 @@ nav,footer{background:#080a0d!important}
  #ct .counter .num{font-size:29px!important}
  #ct .counter button{font-size:16px!important;padding:10px 4px!important}
 }
-</style></head><body><div class="wrap">
+</style>
+<style>
+/* v12.2: 設定推測バーの「設定1〜6」を縦にきれいに整列 */
+.probRow{
+  display:grid !important;
+  grid-template-columns:72px minmax(0,1fr) 96px !important;
+  align-items:center !important;
+  column-gap:10px !important;
+}
+.probRow > b:first-child{
+  display:block !important;
+  width:72px !important;
+  min-width:72px !important;
+  text-align:left !important;
+  white-space:nowrap !important;
+  font-variant-numeric:tabular-nums;
+}
+.probRow > span:last-child{
+  min-width:96px !important;
+  text-align:right !important;
+  white-space:nowrap !important;
+  font-variant-numeric:tabular-nums;
+}
+@media (max-width:430px){
+  .probRow{
+    grid-template-columns:64px minmax(0,1fr) 82px !important;
+    column-gap:8px !important;
+  }
+  .probRow > b:first-child{
+    width:64px !important;
+    min-width:64px !important;
+  }
+  .probRow > span:last-child{
+    min-width:82px !important;
+  }
+}
+</style>
+
+</head><body><div class="wrap">
 <h1>JUGGLER SETTING ANALYZER</h1><div class="sub">全機種校正版 / 機種別尤度 × 詳細REG × 実測ぶどう × 差枚逆算（弱補助）</div>
 <div class="tabs"><button onclick="tab('an')">設定推測</button><button class="secondary" onclick="tab('ct')">実戦カウンター</button><button class="secondary" onclick="tab('th')">展開分析</button><button class="secondary" onclick="showSpec()">📊 スペック</button></div>
 <section id="an"><div class="card"><div class="grid">
@@ -110,7 +148,7 @@ nav,footer{background:#080a0d!important}
 <div class="card"><div class="muted">実戦カウンター ＋ 展開分析</div><div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:7px">
 <img src="icon-192.png" alt="" style="width:52px;height:52px;border-radius:12px;border:1px solid #747b83;box-shadow:0 3px 12px #000">
 <div class="big" style="font-size:22px">JUGGLER ANALYZER</div></div>
-<div class="muted" style="font-weight:800;letter-spacing:.08em">LIVE COUNTER × 展開分析 <span style="font-size:10px;color:#7f8994">v12.1</span></div><div class="muted">ここだけ操作すれば、通常カウントと展開分析へ同時に記録します。</div></div>
+<div class="muted" style="font-weight:800;letter-spacing:.08em">LIVE COUNTER × 展開分析 <span style="font-size:10px;color:#7f8994">v12.2</span></div><div class="muted">ここだけ操作すれば、通常カウントと展開分析へ同時に記録します。</div></div>
 <div class="card"><div class="grid"><div><label>現在G数</label><input id="liveG" type="number" value="0"></div><div><label>現在差枚</label><input id="liveDiff" type="number" value="0"></div><div><label>本日最高差枚</label><input id="liveMax" type="number" value="0"></div></div><div class="muted" style="margin-top:8px">G数を台の表示に合わせてから小役を押せます。連続小役を正確に見る時は、そのまま連続タップしてください。</div></div>
 <div class="card live-counter-card">
 <div class="countgrid live-grid">
