@@ -1,10 +1,10 @@
 {
-  "name": "JUGGLER SETTING ANALYZER + 展開分析",
-  "short_name": "JUGGLER分析",
+  "name": "JUGGLER ANALYZER",
+  "short_name": "JUGGLER",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#0b0e13",
-  "theme_color": "#0b0e13",
+  "background_color": "#050607",
+  "theme_color": "#050607",
   "icons": [
     {
       "src": "icon-192.png",
