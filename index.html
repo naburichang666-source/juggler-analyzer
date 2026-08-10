@@ -171,7 +171,7 @@ nav,footer{background:#080a0d!important}
 <h1>JUGGLER SETTING ANALYZER</h1><div class="sub">全機種校正版 / 機種別尤度 × 詳細REG × 実測ぶどう × 差枚逆算（弱補助）</div>
 <div class="tabs"><button onclick="tab('an')">設定推測</button><button class="secondary" onclick="tab('ct')">実戦カウンター</button><button class="secondary" onclick="tab('th')">展開分析</button><button class="secondary" onclick="showSpec()">📊 スペック</button></div>
 <section id="an"><div class="card"><div class="grid">
-<div><label>機種</label><select id="model"></select></div><div><label>総回転数</label><input id="g" type="number" min="0" value=""></div><div><label>打ち方</label><select id="style"><option value="cherry">チェリー狙い</option><option value="random">適当打ち</option><option value="full">完全技術介入</option></select></div>
+<div><label>機種</label><select id="model"></select></div><div><label>開始時 総ゲーム数</label><input id="startG" type="number" min="0" value="" placeholder="座った時の総G"></div><div><label>現在 総ゲーム数</label><input id="g" type="number" min="0" value="" placeholder="現在の総G"></div><div><label>打ち方</label><select id="style"><option value="cherry">チェリー狙い</option><option value="random">適当打ち</option><option value="full">完全技術介入</option></select></div>
 <div><label>BIG</label><input id="bb" type="number" min="0" value=""></div><div><label>REG</label><input id="rb" type="number" min="0" value=""></div><div><label>差枚数（±）</label><input id="diff" type="number" value=""></div>
 <div><label>ぶどう回数（実測・任意）</label><input id="grape" type="number" min="0" placeholder="未計測なら空欄"></div><div><label>チェリー回数（任意）</label><input id="cherry" type="number" min="0" placeholder="任意"></div><div><label>チェリー重複REG（任意）</label><input id="crb" type="number" min="0" placeholder="任意"></div>
 <div><label>チェリー重複BIG（任意）</label><input id="cbb" type="number" min="0" placeholder="任意"></div><div><label>単独REG（任意）</label><input id="srb" type="number" min="0" placeholder="未入力ならREG−重複REG"></div><div><label>単独BIG（任意）</label><input id="sbb" type="number" min="0" placeholder="未入力ならBIG−重複BIG"></div>
@@ -185,9 +185,14 @@ nav,footer{background:#080a0d!important}
 <div class="card"><div class="muted">実戦カウンター ＋ 展開分析</div><div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:7px">
 <img src="icon-192.png" alt="" style="width:52px;height:52px;border-radius:12px;border:1px solid #747b83;box-shadow:0 3px 12px #000">
 <div class="big" style="font-size:22px">JUGGLER ANALYZER</div></div>
-<div class="muted" style="font-weight:800;letter-spacing:.08em">LIVE COUNTER × 展開分析 <span style="font-size:10px;color:#7f8994">v14</span></div><div class="muted">ここだけ操作すれば、通常カウントと展開分析へ同時に記録します。</div></div>
-<div class="card"><div class="grid"><div><label>現在G数</label><input id="liveG" type="number" value="0"></div><div><label>現在差枚</label><input id="liveDiff" type="number" value="0"></div><div><label>本日最高差枚</label><input id="liveMax" type="number" value="0"></div></div><div class="muted" style="margin-top:8px">G数を台の表示に合わせてから小役を押せます。連続小役を正確に見る時は、そのまま連続タップしてください。</div></div>
-<div class="feedback-controls">
+<div class="muted" style="font-weight:800;letter-spacing:.08em">LIVE COUNTER × 展開分析 <span style="font-size:10px;color:#7f8994">v17</span></div><div class="muted">ここだけ操作すれば、通常カウントと展開分析へ同時に記録します。</div></div>
+<div class="card"><div class="grid">
+<div><label>開始時 総ゲーム数</label><input id="liveStartG" type="number" min="0" value="0"></div>
+<div><label>現在 総ゲーム数</label><input id="liveG" type="number" min="0" value="0"></div>
+<div><label>推定差枚</label><input id="liveDiff" type="number" value="0"></div>
+<div><label>本日最高差枚</label><input id="liveMax" type="number" value="0"></div>
+</div><div class="muted" style="margin-top:8px">開始時の台データ総Gを一度入力してください。以後は小役・ハズレ・その他を押すたび現在総Gを自動加算し、推定差枚も役に応じて更新します。</div></div>
+<div class="muted" style="margin:4px 2px 9px;line-height:1.5">※ハズレは毎G押さず、小役連が途切れた最初の1回だけ押します。連続ハズレ中は追加操作不要です。</div><div class="feedback-controls">
 <button type="button" id="soundToggle" class="sound-toggle" onclick="toggleCountSound()">🔊 カウント音 ON</button>
 </div>
 <div class="card live-counter-card">
@@ -201,7 +206,7 @@ nav,footer{background:#080a0d!important}
   <div class="counter cbb"><div>🍒＋BB</div><div class="num editable-count" id="nCBB" role="button" tabindex="0" title="タップして直接入力" onclick="editLiveCount('CBB')">0</div><button type="button" onclick="chBonusLive('B')">＋1</button></div>
 
   <div class="counter crb"><div>🍒＋RB</div><div class="num editable-count" id="nCRB" role="button" tabindex="0" title="タップして直接入力" onclick="editLiveCount('CRB')">0</div><button type="button" onclick="chBonusLive('RB')">＋1</button></div>
-  <div class="counter miss"><div>💥 ハズレ</div><div class="num editable-count" id="nMiss" role="button" tabindex="0" title="タップして直接入力" onclick="editLiveCount('H')">0</div><button type="button" onclick="live('H')">＋1</button></div>
+  <div class="counter miss"><div>💥 ハズレ区切り</div><div class="num editable-count" id="nMiss" role="button" tabindex="0" title="タップして直接入力" onclick="editLiveCount('H')">0</div><button type="button" onclick="liveBreak()">区切り</button></div>
   <div class="counter other"><div>その他</div><div class="num editable-count" id="nOther" role="button" tabindex="0" title="タップして直接入力" onclick="editLiveCount('X')">0</div><button type="button" onclick="live('X')">＋1</button></div>
 </div>
 <div class="undo-one"><button type="button" onclick="undoLastLive()">↶ 直前のカウントを −1 する</button><div class="muted">最後に入力した1件だけ戻します</div></div>
@@ -318,7 +323,7 @@ function G(x){return document.getElementById(x).value}function ll(n,k,p){if(k<0|
 function reverseGrape(g,bb,rb,diff,pay,style){const rp=1/7.298*3;let cp,bp,pp;if(style==='random'){cp=1/51.99*2;bp=1/4608*14;pp=1/10186*10}else if(style==='full'){cp=1/34.66*2;bp=1/1024*14;pp=1/1024*10}else{cp=1/34.66*2;bp=0;pp=0}const other=g*(rp+cp+bp+pp);const need=diff+g*3-bb*pay[0]-rb*pay[1]-other;const cnt=need/8;return cnt>0?{cnt,p:g/cnt}:null}
 function nearest(arr,val){if(!arr||!val||!isFinite(val))return null;let bi=0,bd=1e99;arr.forEach((x,i)=>{const d=Math.abs(x-val);if(d<bd){bd=d;bi=i}});return bi+1}
 function factorLine(label,obs,arr,weight){if(!obs||!arr)return'';const n=nearest(arr,obs);let tone=n>=5?'good':n>=4?'warn':'';return `<div style="display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid #263244;padding:7px 0"><span>${label}</span><span class="${tone}">1/${obs.toFixed(2)} → 設定${n}付近 <span class="muted">重み${weight.toFixed(2)}</span></span></div>`}
-function calc(){const g=+G('g'),bb=+G('bb'),rb=+G('rb'),d=+G('diff'),gr=+G('grape')||0,cbb=+G('cbb')||0,crb=+G('crb')||0,sbb=G('sbb')===''?Math.max(0,bb-cbb):+G('sbb'),srb=G('srb')===''?Math.max(0,rb-crb):+G('srb');if(!g||bb+rb>g)return alert('入力値を確認してください');if(crb>rb||cbb>bb)return alert('重複ボーナス回数が総ボーナス回数を超えています');const m=M[sel.value],rev=reverseGrape(g,bb,rb,d,m.pay,G('style'));const meta=META[sel.value]||{q:'C',grw:0,note:''};const cal=CALIB[sel.value]||{level:meta.q,basis:'',use:''};let L=m.b.map((x,i)=>0.48*ll(g,bb,1/x[0])+1.00*ll(g,rb,1/x[1]));
+function calc(){const totalG=+G('g'),startG=+G('startG')||0,g=totalG-startG,bb=+G('bb'),rb=+G('rb'),d=+G('diff'),gr=+G('grape')||0,cbb=+G('cbb')||0,crb=+G('crb')||0,sbb=G('sbb')===''?Math.max(0,bb-cbb):+G('sbb'),srb=G('srb')===''?Math.max(0,rb-crb):+G('srb');if(!totalG||g<=0||bb+rb>g)return alert('総ゲーム数を確認してください。現在総Gは開始時総Gより大きく入力してください。');if(crb>rb||cbb>bb)return alert('重複ボーナス回数が総ボーナス回数を超えています');const m=M[sel.value],rev=reverseGrape(g,bb,rb,d,m.pay,G('style'));const meta=META[sel.value]||{q:'C',grw:0,note:''};const cal=CALIB[sel.value]||{level:meta.q,basis:'',use:''};let L=m.b.map((x,i)=>0.48*ll(g,bb,1/x[0])+1.00*ll(g,rb,1/x[1]));
 const det=DETAIL[sel.value];const hasCRB=G('crb')!=='';const hasSRB=G('srb')!==''||hasCRB;
 if(det&&det.srb&&hasSRB){L=L.map((v,i)=>v-1.00*ll(g,rb,1/m.b[i][1])+(det.dw.srb||0)*ll(g,srb,1/det.srb[i])+(hasCRB?(det.dw.crb||0)*ll(g,crb,1/det.crb[i]):0));}
 const ch=+G('cherry')||0;if(det?.ch&&ch>0&&(hasCRB||G('cbb')!=='')){const non=Math.max(0,ch-cbb-crb);L=L.map((v,i)=>v+(det.dw.ch||0)*ll(g,non,1/det.ch[i]));}
@@ -327,23 +332,27 @@ if(gr>0&&m.gr){grapeCnt=gr;gp=g/gr;grapeWeight=meta.grw;grapeSignal='実測';L=L
 else if(rev&&m.gr){grapeCnt=rev.cnt;gp=rev.p;grapeWeight=meta.grw*.28;grapeSignal='差枚逆算（弱い補助）';L=L.map((v,i)=>v+grapeWeight*ll(g,grapeCnt,1/m.gr[i]));}
 const temp=g<1500?2.8:g<3000?2.15:g<5000?1.65:g<7000?1.38:1.22;const mx=Math.max(...L),raw=L.map(x=>Math.exp((x-mx)/temp)),sum=raw.reduce((a,b)=>a+b,0),w=raw.map(x=>x/sum*100),best=w.indexOf(Math.max(...w))+1;const conf=g>=7000?'高':g>=4000?'中〜高':g>=2500?'中':'低';const rows=w.map((p,i)=>`<div class="row"><b>設定${i+1}</b><div class="bar"><div class="fill" style="width:${p}%"></div></div><span class="pct">${p.toFixed(1)}%</span></div>`).join('');const br=x=>x&&isFinite(x)?`1/${x.toFixed(1)}`:'—';
 let factors='';if(bb)factors+=factorLine('BIG',g/bb,m.b.map(x=>x[0]),.48);if(rb&&!hasSRB)factors+=factorLine('REG',g/rb,m.b.map(x=>x[1]),1.00);if(det?.srb&&hasSRB&&srb)factors+=factorLine('単独REG',g/srb,det.srb,det.dw.srb||0);if(det?.crb&&hasCRB&&crb)factors+=factorLine('チェリー重複REG',g/crb,det.crb,det.dw.crb||0);if(gp&&m.gr)factors+=factorLine(`ぶどう（${grapeSignal}）`,gp,m.gr,grapeWeight);if(det?.ch&&ch>0&&(hasCRB||G('cbb')!=='')){const non=Math.max(0,ch-cbb-crb);if(non)factors+=factorLine('非同時チェリー',g/non,det.ch,det.dw.ch||0);}
-document.getElementById('out').innerHTML=`<div class="card"><div class="muted">総合判定 / 信頼度 ${conf} / データ品質 ${cal.level}</div><div class="big best-setting-title">設定<span class="best-setting-no">${best}</span><span>が最有力</span></div>${rows}<div class="muted">※同一事前確率での相対尤度。ホールの設定配分は含みません。</div></div><div class="kpis"><div class="kpi"><span class="muted">BIG</span><b>${br(g/bb)}</b></div><div class="kpi"><span class="muted">REG</span><b>${br(g/rb)}</b></div><div class="kpi"><span class="muted">合算</span><b>${br(g/(bb+rb))}</b></div><div class="kpi"><span class="muted">ぶどう</span><b>${gp?'1/'+gp.toFixed(2):'—'}</b></div></div><div class="card"><b>判定根拠</b>${factors||'<div class="muted" style="margin-top:8px">入力されたBIG/REGを中心に判定しています。</div>'}<div class="muted" style="margin-top:10px">${cal.use}<br>根拠データ：${cal.basis}</div></div><div class="card"><b>高設定側の相対期待度</b><p>設定4以上 <strong>${(w[3]+w[4]+w[5]).toFixed(1)}%</strong>　／　設定5以上 <strong>${(w[4]+w[5]).toFixed(1)}%</strong>　／　設定6 <strong>${w[5].toFixed(1)}%</strong></p><div class="muted">ぶどう：${grapeSignal}${rev&&!gr?`（逆算 1/${rev.p.toFixed(2)}、判定ウェイトを実測の28%に制限）`:''}<br>内訳：単独BIG ${sbb} / 単独REG ${srb} / チェリー重複BIG ${cbb} / チェリー重複REG ${crb}<br><b>データ品質 ${meta.q}</b>：${meta.note}${EMP6[sel.value]?'<br>'+EMP6[sel.value]:''}${BACKTEST[sel.value]?'<br><b>大量実戦検証</b>：'+BACKTEST[sel.value]:''}<br>短時間の上振れ・下振れを考慮し、ゲーム数が少ないほど尤度を平滑化しています。差枚逆算ぶどうは実測ぶどうより不確実なため、弱い補助材料としてのみ使用します。</div></div>`;save()}
+document.getElementById('out').innerHTML=`<div class="card"><div class="muted">総合判定 / 信頼度 ${conf} / データ品質 ${cal.level}</div><div class="muted">今回の実戦：${g}G（${startG}G → ${totalG}G）</div><div class="big best-setting-title">設定<span class="best-setting-no">${best}</span><span>が最有力</span></div>${rows}<div class="muted">※同一事前確率での相対尤度。ホールの設定配分は含みません。</div></div><div class="kpis"><div class="kpi"><span class="muted">BIG</span><b>${br(g/bb)}</b></div><div class="kpi"><span class="muted">REG</span><b>${br(g/rb)}</b></div><div class="kpi"><span class="muted">合算</span><b>${br(g/(bb+rb))}</b></div><div class="kpi"><span class="muted">ぶどう</span><b>${gp?'1/'+gp.toFixed(2):'—'}</b></div></div><div class="card"><b>判定根拠</b>${factors||'<div class="muted" style="margin-top:8px">入力されたBIG/REGを中心に判定しています。</div>'}<div class="muted" style="margin-top:10px">${cal.use}<br>根拠データ：${cal.basis}</div></div><div class="card"><b>高設定側の相対期待度</b><p>設定4以上 <strong>${(w[3]+w[4]+w[5]).toFixed(1)}%</strong>　／　設定5以上 <strong>${(w[4]+w[5]).toFixed(1)}%</strong>　／　設定6 <strong>${w[5].toFixed(1)}%</strong></p><div class="muted">ぶどう：${grapeSignal}${rev&&!gr?`（逆算 1/${rev.p.toFixed(2)}、判定ウェイトを実測の28%に制限）`:''}<br>内訳：単独BIG ${sbb} / 単独REG ${srb} / チェリー重複BIG ${cbb} / チェリー重複REG ${crb}<br><b>データ品質 ${meta.q}</b>：${meta.note}${EMP6[sel.value]?'<br>'+EMP6[sel.value]:''}${BACKTEST[sel.value]?'<br><b>大量実戦検証</b>：'+BACKTEST[sel.value]:''}<br>短時間の上振れ・下振れを考慮し、ゲーム数が少ないほど尤度を平滑化しています。差枚逆算ぶどうは実測ぶどうより不確実なため、弱い補助材料としてのみ使用します。</div></div>`;save()}
 const C=['ぶどう','チェリー','RB','BB','チェリー重複RB','チェリー重複BB'];let cv=JSON.parse(localStorage.getItem('jugCounter')||'{}');C.forEach(x=>cv[x]??=0);function drawC(){const el=document.getElementById('counters');if(!el)return;el.innerHTML=C.map(x=>`<div class="counter"><div class="muted">${x}</div><div class="num">${cv[x]}</div><button onclick="inc('${x}')">＋1</button><button class="secondary" onclick="dec('${x}')">−1</button></div>`).join('')}function inc(x){cv[x]++;storeC()}function dec(x){cv[x]=Math.max(0,cv[x]-1);storeC()}function storeC(){localStorage.setItem('jugCounter',JSON.stringify(cv));drawC()}function resetCounters(){if(confirm('カウンターを0に戻しますか？')){C.forEach(x=>cv[x]=0);storeC()}}function applyCounters(){document.getElementById('g').value=document.getElementById('liveG').value;document.getElementById('diff').value=document.getElementById('liveDiff').value;document.getElementById('grape').value=cv['ぶどう'];document.getElementById('cherry').value=cv['チェリー'];document.getElementById('bb').value=cv['BB'];document.getElementById('rb').value=cv['RB'];document.getElementById('crb').value=cv['チェリー重複RB'];document.getElementById('cbb').value=cv['チェリー重複BB'];document.getElementById('srb').value=Math.max(0,cv['RB']-cv['チェリー重複RB']);document.getElementById('sbb').value=Math.max(0,cv['BB']-cv['チェリー重複BB']);tab('an');calc()}
 function tab(x){['an','ct','th'].forEach(id=>document.getElementById(id).classList.toggle('hidden',id!==x));if(x==='th')drawTheory()}
+function syncEstimateStart(){
+ const a=document.getElementById('startG'),b=document.getElementById('liveStartG'),g=document.getElementById('liveG');if(!a||!b)return;
+ b.value=Number(a.value)||0;if(TH.events.length===0&&g)g.value=Number(a.value)||0;persistAll();
+}
 function resetEstimate(){
  if(!confirm('設定推測の入力内容をすべてリセットしますか？'))return;
- ['g','bb','rb','diff','grape','cherry','crb','cbb','srb','sbb'].forEach(id=>{
+ ['startG','g','bb','rb','diff','grape','cherry','crb','cbb','srb','sbb'].forEach(id=>{
    const e=document.getElementById(id); if(e)e.value='';
  });
  const st=document.getElementById('style'); if(st)st.value='cherry';
  const out=document.getElementById('out'); if(out)out.innerHTML='';
- ['model','g','bb','rb','diff','grape','cherry','crb','cbb','srb','sbb','style'].forEach(id=>{
+ ['model','startG','g','bb','rb','diff','grape','cherry','crb','cbb','srb','sbb','style'].forEach(id=>{
    try{localStorage.removeItem('jug_'+id)}catch(e){}
  });
 }
 
-function save(){['model','g','bb','rb','diff','grape','cherry','crb','cbb','srb','sbb','style'].forEach(id=>localStorage.setItem('jug_'+id,G(id)))}
-function load(){['model','g','bb','rb','diff','grape','cherry','crb','cbb','srb','sbb','style'].forEach(id=>{let v=localStorage.getItem('jug_'+id);if(v!==null&&document.getElementById(id))document.getElementById(id).value=v})}
+function save(){['model','startG','g','bb','rb','diff','grape','cherry','crb','cbb','srb','sbb','style'].forEach(id=>localStorage.setItem('jug_'+id,G(id)))}
+function load(){['model','startG','g','bb','rb','diff','grape','cherry','crb','cbb','srb','sbb','style'].forEach(id=>{let v=localStorage.getItem('jug_'+id);if(v!==null&&document.getElementById(id))document.getElementById(id).value=v})}
 
 /* 展開分析：独自理論は設定推測から分離し、観測データとして検証 */
 let TH=JSON.parse(localStorage.getItem('jugTheoryV1')||'null')||{events:[],signals:[],bonuses:[]};
@@ -402,7 +411,7 @@ function drawTheory(){
  document.getElementById('theorySignal').innerHTML=`<div class="card signal ${cls}"><div class="muted">現在の展開サイン</div><div class="phase">${level==='なし'?'通常範囲':level+' '+a.score+'/100'}</div><div style="margin-top:8px">${a.reasons.length?a.reasons.map(x=>`<span class="pill">${x}</span>`).join(''):'<span class="muted">目立つ小役集中はまだ検出していません。</span>'}</div><div class="muted" style="margin-top:9px">これはボーナス当選確率ではなく、独自仮説との一致度です。</div></div>`;
  const s50=statsFor(50),s100=statsFor(100);
  document.getElementById('theoryStats').innerHTML=`<div class="kpi"><span class="muted">判定済サイン</span><b>${s100.n}</b></div><div class="kpi"><span class="muted">50G以内</span><b>${s50.n?s50.p.toFixed(1)+'%':'—'}</b><span class="tiny">${s50.hit}/${s50.n}</span></div><div class="kpi"><span class="muted">100G以内</span><b>${s100.n?s100.p.toFixed(1)+'%':'—'}</b><span class="tiny">${s100.hit}/${s100.n}</span></div>`;
- let h=[...TH.events.slice(-18)].reverse().map(e=>`<div style="padding:6px 0;border-bottom:1px solid #263244"><b>${e.g}G</b>　${e.type==='G'?'🍇ぶどう':e.type==='R'?'↻リプレイ':e.type==='C'?'🍒チェリー':e.type==='H'?'💥ハズレ':'・その他'}</div>`).join('');
+ let h=[...TH.events.slice(-18)].reverse().map(e=>`<div style="padding:6px 0;border-bottom:1px solid #263244"><b>${e.g}G</b>　${e.type==='G'?'🍇ぶどう':e.type==='R'?'↻リプレイ':e.type==='C'?'🍒チェリー':e.type==='H'?'💥ハズレ区切り':'・その他'}</div>`).join('');
  document.getElementById('theoryHistory').innerHTML=h||'<div class="muted" style="margin-top:8px">まだ記録がありません。</div>';
  ['tg','tdiff','tmax'].forEach(id=>localStorage.setItem('jugTheory_'+id,document.getElementById(id).value))
 }
@@ -426,10 +435,16 @@ function syncLiveToTheory(){
  const tg=document.getElementById('tg'),td=document.getElementById('tdiff'),tm=document.getElementById('tmax');
  if(tg&&g)tg.value=g.value;if(td&&d)td.value=d.value;if(tm&&m)tm.value=m.value;
 }
+function syncLiveToEstimate(){
+ const pairs=[['liveStartG','startG'],['liveG','g'],['liveDiff','diff'],['nGrape','grape'],['nCherry','cherry'],['nBB','bb'],['nRB','rb'],['nCBB','cbb'],['nCRB','crb']];
+ pairs.forEach(([a,b])=>{const x=document.getElementById(a),y=document.getElementById(b);if(x&&y)y.value=(x.tagName==='INPUT'?x.value:x.textContent)||0});
+ save();
+}
 function persistAll(){
  syncLiveToTheory();
+ syncLiveToEstimate();
  try{localStorage.setItem('jugCounter',JSON.stringify(cv))}catch(e){}
- tstore(); saveLiveHistory();
+ tstore(); try{localStorage.setItem('jugLiveStartG',document.getElementById('liveStartG')?.value||0)}catch(e){} saveLiveHistory();
 }
 function recalcSignalResults(){
  TH.signals.forEach(s=>{s.result=null});
@@ -529,7 +544,7 @@ function editLiveCount(type){
 function undoLastLive(){
  const h=LIVE_HISTORY.pop(); if(!h)return;
  const gEl=document.getElementById('liveG');
- if(gEl&&h.advanceG)gEl.value=Math.max(0,(Number(gEl.value)||0)-1);
+ if(gEl&&h.advanceG){gEl.value=Math.max(0,(Number(gEl.value)||0)-1);const d=document.getElementById('liveDiff');if(d)d.value=(Number(d.value)||0)-liveNetDelta(h.type);}
  if(h.type==='G')cv['ぶどう']=Math.max(0,(Number(cv['ぶどう'])||0)-1);
  if(h.type==='C')cv['チェリー']=Math.max(0,(Number(cv['チェリー'])||0)-1);
  if(h.type==='BB')cv['BB']=Math.max(0,(Number(cv['BB'])||0)-1);
@@ -542,8 +557,37 @@ function undoLastLive(){
  recalcSignalResults(); updateVisibleCounts(); persistAll(); countFeedback(h.type,true);
  try{drawLiveSignal();drawTheory()}catch(e){console.error(e)}
 }
+
+function liveNetDelta(type){
+ // 通常時の1Gあたり推定差枚。3枚掛け基準。
+ // ぶどう8枚→+5、チェリー2枚→-1、リプレイ→0、ハズレ/その他→-3。
+ const d={G:5,C:-1,R:0,H:0,X:-3};
+ return d[type]??0;
+}
+function applyLiveDelta(type){
+ const e=document.getElementById('liveDiff');if(!e)return;
+ e.value=(Number(e.value)||0)+liveNetDelta(type);
+ const m=document.getElementById('liveMax');
+ if(m && Number(e.value)>Number(m.value||0))m.value=Number(e.value);
+}
+function setStartGames(){
+ const st=document.getElementById('liveStartG'),g=document.getElementById('liveG');
+ if(!st||!g)return;
+ // 開始Gを変更した時、まだ実戦イベントがなければ現在Gも同期。
+ if(TH.events.length===0)g.value=Number(st.value)||0;
+ persistAll();drawLiveSignal();
+}
+
+function liveBreak(){
+ const g=Number(document.getElementById('liveG')?.value)||0,eventTs=Date.now(),signalCountBefore=TH.signals.length;
+ const last=TH.events[TH.events.length-1];if(last?.type==='H'){countFeedback('H',false);return}
+ TH.events.push({g,type:'H',diff:Number(document.getElementById('liveDiff')?.value)||0,max:Number(document.getElementById('liveMax')?.value)||0,ts:eventTs,marker:true});
+ try{syncLiveToTheory();autoSignal()}catch(e){}
+ pushLiveHistory({type:'H',advanceG:false,eventTs,signalCountBefore,marker:true});
+ updateVisibleCounts();persistAll();countFeedback('H',false);try{drawLiveSignal();drawTheory()}catch(e){}
+}
 function live(type){
- const gEl=document.getElementById('liveG'),g=(Number(gEl?.value)||0)+1;if(gEl)gEl.value=g;
+ const gEl=document.getElementById('liveG'),g=(Number(gEl?.value)||0)+1;if(gEl)gEl.value=g; applyLiveDelta(type);
  if(type==='G')cv['ぶどう']=(Number(cv['ぶどう'])||0)+1;
  if(type==='C')cv['チェリー']=(Number(cv['チェリー'])||0)+1;
  const eventTs=Date.now(),signalCountBefore=TH.signals.length;
@@ -575,14 +619,16 @@ function drawLiveSignal(){
 function resetLive(){
  if(!confirm('カウンターと展開分析を初期化しますか？'))return;
  C.forEach(x=>cv[x]=0);TH={events:[],signals:[],bonuses:[]};LIVE_HISTORY=[];
- ['liveG','liveDiff','liveMax','tg','tdiff','tmax'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=0});
+ ['liveStartG','liveG','liveDiff','liveMax','tg','tdiff','tmax'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=0});
  updateVisibleCounts();persistAll();drawLiveSignal();drawTheory()
 }
 function loadLive(){
  try{LIVE_HISTORY=JSON.parse(localStorage.getItem('jugLiveHistory')||'[]')}catch(e){LIVE_HISTORY=[]}
  const vals={liveG:'jugTheory_tg',liveDiff:'jugTheory_tdiff',liveMax:'jugTheory_tmax'};
+ const sg=document.getElementById('liveStartG');if(sg)sg.value=localStorage.getItem('jugLiveStartG')||0;
  Object.entries(vals).forEach(([id,k])=>{const e=document.getElementById(id);if(e)e.value=localStorage.getItem(k)||0});
  ['liveG','liveDiff','liveMax'].forEach(id=>document.getElementById(id)?.addEventListener('change',()=>{persistAll();drawLiveSignal()}));
+ document.getElementById('liveStartG')?.addEventListener('change',setStartGames);
  recalcSignalResults();updateVisibleCounts();syncLiveToTheory();drawLiveSignal()
 }
 
@@ -593,11 +639,12 @@ function startApp(){
  drawC();
  updateSoundToggle();
  load();
+ document.getElementById('startG')?.addEventListener('change',syncEstimateStart);
  loadTheory();
  loadLive();
 
  // 設定推測は保存済み入力がある場合のみ結果を再計算。
- const hasEstimate=['g','bb','rb','diff','grape','cherry','crb','cbb','srb','sbb']
+ const hasEstimate=['startG','g','bb','rb','diff','grape','cherry','crb','cbb','srb','sbb']
    .some(id=>{const e=document.getElementById(id);return e&&String(e.value).trim()!=='';});
  if(hasEstimate){try{calc()}catch(e){console.error(e)}}
  else {const out=document.getElementById('out');if(out)out.innerHTML='';}
