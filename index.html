@@ -1,7 +1,7 @@
-<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>JUGGLER Setting Analyzer - Empirical Calibration</title>
-<style>:root{--bg:#0b0e13;--card:#151b24;--line:#2b3544;--text:#f5f7fa;--muted:#9aa7b8;--gold:#ffd84d;--green:#32d583;--red:#ff5d68;--blue:#57a6ff}*{box-sizing:border-box}body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:linear-gradient(#090c11,#101620);color:var(--text);margin:0;padding:14px}.wrap{max-width:980px;margin:auto}h1{font-size:25px;margin:8px 0;color:var(--gold)}.sub{color:var(--muted);font-size:12px;margin-bottom:12px}.tabs{display:flex;gap:8px;position:sticky;top:0;background:#0b0e13e8;padding:8px 0;z-index:3}.tabs button{width:auto;flex:1}.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin:10px 0;box-shadow:0 8px 24px #0004}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}label{display:block;font-size:12px;color:#b3bdca;margin-bottom:4px}input,select{width:100%;padding:12px;border-radius:10px;border:1px solid #3b485a;background:#0b1017;color:#fff;font-size:16px}button{padding:12px;border:0;border-radius:10px;background:var(--gold);color:#111;font-weight:800;font-size:15px;cursor:pointer}.secondary{background:#273244;color:#fff}.danger{background:#5c2630;color:#fff}.row{display:flex;align-items:center;gap:8px;margin:9px 0}.bar{height:19px;background:#273140;border-radius:10px;flex:1;overflow:hidden}.fill{height:100%;background:linear-gradient(90deg,var(--green),var(--gold))}.pct{width:60px;text-align:right}.big{font-size:27px;font-weight:900}.muted{color:var(--muted);font-size:12px}.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.kpi{background:#0e141d;border:1px solid #263244;border-radius:12px;padding:10px}.kpi b{display:block;font-size:19px;margin-top:3px}.countgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.counter{background:#101720;border:1px solid #2b3747;border-radius:12px;padding:10px;text-align:center}.counter .num{font-size:27px;font-weight:900}.counter button{width:100%;margin-top:7px}.good{color:#66e39e}.warn{color:#ffd76a}.bad{color:#ff7b84}.hidden{display:none}.note{border-left:3px solid var(--blue);padding-left:10px}.source{font-size:11px;color:#8592a5}.flex{display:flex;gap:8px}.flex>*{flex:1}@media(max-width:700px){.grid{grid-template-columns:1fr 1fr}.kpis{grid-template-columns:1fr 1fr}.countgrid{grid-template-columns:1fr 1fr}}@media(max-width:420px){.grid{grid-template-columns:1fr}.countgrid{grid-template-columns:1fr 1fr}}</style></head><body><div class="wrap">
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>JUGGLER Setting Analyzer + 展開分析</title>
+<style>:root{--bg:#0b0e13;--card:#151b24;--line:#2b3544;--text:#f5f7fa;--muted:#9aa7b8;--gold:#ffd84d;--green:#32d583;--red:#ff5d68;--blue:#57a6ff}*{box-sizing:border-box}body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:linear-gradient(#090c11,#101620);color:var(--text);margin:0;padding:14px}.wrap{max-width:980px;margin:auto}h1{font-size:25px;margin:8px 0;color:var(--gold)}.sub{color:var(--muted);font-size:12px;margin-bottom:12px}.tabs{display:flex;gap:8px;position:sticky;top:0;background:#0b0e13e8;padding:8px 0;z-index:3}.tabs button{width:auto;flex:1}.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin:10px 0;box-shadow:0 8px 24px #0004}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}label{display:block;font-size:12px;color:#b3bdca;margin-bottom:4px}input,select{width:100%;padding:12px;border-radius:10px;border:1px solid #3b485a;background:#0b1017;color:#fff;font-size:16px}button{padding:12px;border:0;border-radius:10px;background:var(--gold);color:#111;font-weight:800;font-size:15px;cursor:pointer}.secondary{background:#273244;color:#fff}.danger{background:#5c2630;color:#fff}.row{display:flex;align-items:center;gap:8px;margin:9px 0}.bar{height:19px;background:#273140;border-radius:10px;flex:1;overflow:hidden}.fill{height:100%;background:linear-gradient(90deg,var(--green),var(--gold))}.pct{width:60px;text-align:right}.big{font-size:27px;font-weight:900}.muted{color:var(--muted);font-size:12px}.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.kpi{background:#0e141d;border:1px solid #263244;border-radius:12px;padding:10px}.kpi b{display:block;font-size:19px;margin-top:3px}.countgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.counter{background:#101720;border:1px solid #2b3747;border-radius:12px;padding:10px;text-align:center}.counter .num{font-size:27px;font-weight:900}.counter button{width:100%;margin-top:7px}.good{color:#66e39e}.warn{color:#ffd76a}.bad{color:#ff7b84}.hidden{display:none}.note{border-left:3px solid var(--blue);padding-left:10px}.source{font-size:11px;color:#8592a5}.flex{display:flex;gap:8px}.flex>*{flex:1}@media(max-width:700px){.grid{grid-template-columns:1fr 1fr}.kpis{grid-template-columns:1fr 1fr}.countgrid{grid-template-columns:1fr 1fr}}.theorygrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.eventbtn{min-height:58px}.signal{border:1px solid #34445a;border-radius:14px;padding:14px;background:#0e141d}.signal.weak{border-color:#47735b}.signal.mid{border-color:#9c7a25}.signal.strong{border-color:#a83d47;box-shadow:0 0 20px #ff5d6822}.history{max-height:260px;overflow:auto}.pill{display:inline-block;padding:4px 8px;border-radius:999px;background:#273244;margin:2px;font-size:11px}.phase{font-size:22px;font-weight:900}.tiny{font-size:10px;color:#8795a8}.statgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}@media(max-width:700px){.theorygrid{grid-template-columns:repeat(3,1fr)}.statgrid{grid-template-columns:1fr 1fr}}@media(max-width:420px){.grid{grid-template-columns:1fr}.countgrid{grid-template-columns:1fr 1fr}.theorygrid{grid-template-columns:1fr 1fr}}</style><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0b0e13"><link rel="apple-touch-icon" href="icon-180.png"></head><body><div class="wrap">
 <h1>JUGGLER SETTING ANALYZER</h1><div class="sub">全機種校正版 / 機種別尤度 × 詳細REG × 実測ぶどう × 差枚逆算（弱補助）</div>
-<div class="tabs"><button onclick="tab('an')">設定推測</button><button class="secondary" onclick="tab('ct')">実戦カウンター</button><button class="secondary" onclick="showSpec()">📊 スペック</button></div>
+<div class="tabs"><button onclick="tab('an')">設定推測</button><button class="secondary" onclick="tab('ct')">実戦カウンター</button><button class="secondary" onclick="tab('th')">展開分析</button><button class="secondary" onclick="showSpec()">📊 スペック</button></div>
 <section id="an"><div class="card"><div class="grid">
 <div><label>機種</label><select id="model"></select></div><div><label>総回転数</label><input id="g" type="number" min="0" value="6000"></div><div><label>打ち方</label><select id="style"><option value="cherry">チェリー狙い</option><option value="random">適当打ち</option><option value="full">完全技術介入</option></select></div>
 <div><label>BIG</label><input id="bb" type="number" min="0" value="24"></div><div><label>REG</label><input id="rb" type="number" min="0" value="25"></div><div><label>差枚数（±）</label><input id="diff" type="number" value="1000"></div>
@@ -9,6 +9,44 @@
 <div><label>チェリー重複BIG（任意）</label><input id="cbb" type="number" min="0" placeholder="任意"></div><div><label>単独REG（任意）</label><input id="srb" type="number" min="0" placeholder="未入力ならREG−重複REG"></div><div><label>単独BIG（任意）</label><input id="sbb" type="number" min="0" placeholder="未入力ならBIG−重複BIG"></div>
 </div><br><button style="width:100%" onclick="calc()">設定を推測する</button></div><div id="out"></div></section>
 <section id="ct" class="hidden"><div class="card"><div class="countgrid" id="counters"></div><br><div class="flex"><button onclick="applyCounters()">推測画面へ反映</button><button class="danger" onclick="resetCounters()">カウンター初期化</button></div></div><div class="card muted">ボーナス成立時は BB / RB を加算し、チェリー重複なら対応する重複ボタンも加算してください。ぶどう・チェリーは通常時にカウントします。</div></section>
+
+<section id="th" class="hidden">
+<div class="card">
+  <div class="muted">独自理論・検証モード</div>
+  <div class="big" style="font-size:22px">展開分析</div>
+  <div class="muted">設定推測とは完全に分離しています。「前兆」や「差枚調整」が実在すると断定せず、実戦履歴から再現性を検証するための機能です。</div>
+</div>
+<div class="card">
+ <div class="grid">
+  <div><label>現在ゲーム数</label><input id="tg" type="number" min="0" value="0"></div>
+  <div><label>現在差枚</label><input id="tdiff" type="number" value="0"></div>
+  <div><label>本日最高差枚</label><input id="tmax" type="number" value="0"></div>
+ </div>
+ <br><div class="theorygrid">
+  <button class="eventbtn" onclick="tevent('G')">🍇 ぶどう</button>
+  <button class="eventbtn secondary" onclick="tevent('R')">↻ リプレイ</button>
+  <button class="eventbtn secondary" onclick="tevent('C')">🍒 チェリー</button>
+  <button class="eventbtn secondary" onclick="tevent('X')">・ その他</button>
+  <button class="eventbtn" onclick="tbonus('B')">BB 当選</button>
+  <button class="eventbtn" onclick="tbonus('RB')">RB 当選</button>
+ </div>
+ <div class="tiny" style="margin-top:8px">小役ボタンは1タップ＝1G進行。何もないゲームは「その他」。毎ゲーム入力が大変なら、小役が集中した区間だけ記録しても使えますが、統計精度は下がります。</div>
+</div>
+<div id="theorySignal"></div>
+<div class="card">
+ <b>手動サイン記録</b><div class="muted">「今の流れは怪しい」と感じた瞬間を保存できます。自動判定とあなたの感覚を別々に検証します。</div>
+ <br><div class="flex"><button class="secondary" onclick="manualSignal('中')">中サインを記録</button><button class="danger" onclick="manualSignal('強')">強サインを記録</button></div>
+</div>
+<div class="card">
+ <b>理論の検証成績</b><div id="theoryStats" class="statgrid" style="margin-top:10px"></div>
+ <div class="tiny" style="margin-top:8px">サイン後50G/100G以内のBB・RBを自動集計。母数が少ないうちは「期待度」として扱わず、観測結果として表示します。</div>
+</div>
+<div class="card">
+ <div style="display:flex;justify-content:space-between;align-items:center"><b>直近イベント</b><button class="secondary" onclick="undoTheory()">1手戻す</button></div>
+ <div id="theoryHistory" class="history"></div>
+ <br><button class="danger" style="width:100%" onclick="resetTheory()">展開分析データを初期化</button>
+</div>
+</section>
 <div id="specModal" class="hidden" style="position:fixed;inset:0;background:#000b;z-index:20;padding:16px;overflow:auto" onclick="if(event.target===this)hideSpec()"><div class="card" style="max-width:820px;margin:4vh auto"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><div><div class="muted">機種別スペック</div><div id="specTitle" class="big" style="font-size:22px"></div></div><button class="secondary" onclick="hideSpec()">✕ 閉じる</button></div><div id="specBody" style="overflow-x:auto;margin-top:12px"></div></div></div>
 <div class="card note"><b>計算上の注意</b><div class="muted">「設定期待度」は各設定を同じ事前確率とした統計的な相対尤度です。ホール配分・イベント・台履歴などは含みません。差枚ぶどうは推定値なので、実測ぶどうがある場合は実測値を優先します。短いゲーム数では数値が大きく振れます。</div></div>
 </div><script>
@@ -90,10 +128,74 @@ else if(rev&&m.gr){grapeCnt=rev.cnt;gp=rev.p;grapeWeight=meta.grw*.28;grapeSigna
 const temp=g<1500?2.8:g<3000?2.15:g<5000?1.65:g<7000?1.38:1.22;const mx=Math.max(...L),raw=L.map(x=>Math.exp((x-mx)/temp)),sum=raw.reduce((a,b)=>a+b,0),w=raw.map(x=>x/sum*100),best=w.indexOf(Math.max(...w))+1;const conf=g>=7000?'高':g>=4000?'中〜高':g>=2500?'中':'低';const rows=w.map((p,i)=>`<div class="row"><b>設定${i+1}</b><div class="bar"><div class="fill" style="width:${p}%"></div></div><span class="pct">${p.toFixed(1)}%</span></div>`).join('');const br=x=>x&&isFinite(x)?`1/${x.toFixed(1)}`:'—';
 let factors='';if(bb)factors+=factorLine('BIG',g/bb,m.b.map(x=>x[0]),.48);if(rb&&!hasSRB)factors+=factorLine('REG',g/rb,m.b.map(x=>x[1]),1.00);if(det?.srb&&hasSRB&&srb)factors+=factorLine('単独REG',g/srb,det.srb,det.dw.srb||0);if(det?.crb&&hasCRB&&crb)factors+=factorLine('チェリー重複REG',g/crb,det.crb,det.dw.crb||0);if(gp&&m.gr)factors+=factorLine(`ぶどう（${grapeSignal}）`,gp,m.gr,grapeWeight);if(det?.ch&&ch>0&&(hasCRB||G('cbb')!=='')){const non=Math.max(0,ch-cbb-crb);if(non)factors+=factorLine('非同時チェリー',g/non,det.ch,det.dw.ch||0);}
 document.getElementById('out').innerHTML=`<div class="card"><div class="muted">総合判定 / 信頼度 ${conf} / データ品質 ${cal.level}</div><div class="big">設定${best} が最有力</div>${rows}<div class="muted">※同一事前確率での相対尤度。ホールの設定配分は含みません。</div></div><div class="kpis"><div class="kpi"><span class="muted">BIG</span><b>${br(g/bb)}</b></div><div class="kpi"><span class="muted">REG</span><b>${br(g/rb)}</b></div><div class="kpi"><span class="muted">合算</span><b>${br(g/(bb+rb))}</b></div><div class="kpi"><span class="muted">ぶどう</span><b>${gp?'1/'+gp.toFixed(2):'—'}</b></div></div><div class="card"><b>判定根拠</b>${factors||'<div class="muted" style="margin-top:8px">入力されたBIG/REGを中心に判定しています。</div>'}<div class="muted" style="margin-top:10px">${cal.use}<br>根拠データ：${cal.basis}</div></div><div class="card"><b>高設定側の相対期待度</b><p>設定4以上 <strong>${(w[3]+w[4]+w[5]).toFixed(1)}%</strong>　／　設定5以上 <strong>${(w[4]+w[5]).toFixed(1)}%</strong>　／　設定6 <strong>${w[5].toFixed(1)}%</strong></p><div class="muted">ぶどう：${grapeSignal}${rev&&!gr?`（逆算 1/${rev.p.toFixed(2)}、判定ウェイトを実測の28%に制限）`:''}<br>内訳：単独BIG ${sbb} / 単独REG ${srb} / チェリー重複BIG ${cbb} / チェリー重複REG ${crb}<br><b>データ品質 ${meta.q}</b>：${meta.note}${EMP6[sel.value]?'<br>'+EMP6[sel.value]:''}${BACKTEST[sel.value]?'<br><b>大量実戦検証</b>：'+BACKTEST[sel.value]:''}<br>短時間の上振れ・下振れを考慮し、ゲーム数が少ないほど尤度を平滑化しています。差枚逆算ぶどうは実測ぶどうより不確実なため、弱い補助材料としてのみ使用します。</div></div>`;save()}
-const C=['ぶどう','チェリー','RB','BB','チェリー重複RB','チェリー重複BB'];let cv=JSON.parse(localStorage.getItem('jugCounter')||'{}');C.forEach(x=>cv[x]??=0);function drawC(){document.getElementById('counters').innerHTML=C.map(x=>`<div class="counter"><div class="muted">${x}</div><div class="num">${cv[x]}</div><button onclick="inc('${x}')">＋1</button><button class="secondary" onclick="dec('${x}')">−1</button></div>`).join('')}function inc(x){cv[x]++;storeC()}function dec(x){cv[x]=Math.max(0,cv[x]-1);storeC()}function storeC(){localStorage.setItem('jugCounter',JSON.stringify(cv));drawC()}function resetCounters(){if(confirm('カウンターを0に戻しますか？')){C.forEach(x=>cv[x]=0);storeC()}}function applyCounters(){document.getElementById('grape').value=cv['ぶどう'];document.getElementById('cherry').value=cv['チェリー'];document.getElementById('bb').value=cv['BB'];document.getElementById('rb').value=cv['RB'];document.getElementById('crb').value=cv['チェリー重複RB'];document.getElementById('cbb').value=cv['チェリー重複BB'];document.getElementById('srb').value=Math.max(0,cv['RB']-cv['チェリー重複RB']);document.getElementById('sbb').value=Math.max(0,cv['BB']-cv['チェリー重複BB']);tab('an');calc()}function tab(x){document.getElementById('an').classList.toggle('hidden',x!=='an');document.getElementById('ct').classList.toggle('hidden',x!=='ct')}function save(){['model','g','bb','rb','diff','grape','cherry','crb','cbb','srb','sbb','style'].forEach(id=>localStorage.setItem('jug_'+id,G(id)))}function load(){['model','g','bb','rb','diff','grape','cherry','crb','cbb','srb','sbb','style'].forEach(id=>{let v=localStorage.getItem('jug_'+id);if(v!==null&&document.getElementById(id))document.getElementById(id).value=v})}drawC();load();calc();
-</script><script>
-if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
-  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+const C=['ぶどう','チェリー','RB','BB','チェリー重複RB','チェリー重複BB'];let cv=JSON.parse(localStorage.getItem('jugCounter')||'{}');C.forEach(x=>cv[x]??=0);function drawC(){document.getElementById('counters').innerHTML=C.map(x=>`<div class="counter"><div class="muted">${x}</div><div class="num">${cv[x]}</div><button onclick="inc('${x}')">＋1</button><button class="secondary" onclick="dec('${x}')">−1</button></div>`).join('')}function inc(x){cv[x]++;storeC()}function dec(x){cv[x]=Math.max(0,cv[x]-1);storeC()}function storeC(){localStorage.setItem('jugCounter',JSON.stringify(cv));drawC()}function resetCounters(){if(confirm('カウンターを0に戻しますか？')){C.forEach(x=>cv[x]=0);storeC()}}function applyCounters(){document.getElementById('grape').value=cv['ぶどう'];document.getElementById('cherry').value=cv['チェリー'];document.getElementById('bb').value=cv['BB'];document.getElementById('rb').value=cv['RB'];document.getElementById('crb').value=cv['チェリー重複RB'];document.getElementById('cbb').value=cv['チェリー重複BB'];document.getElementById('srb').value=Math.max(0,cv['RB']-cv['チェリー重複RB']);document.getElementById('sbb').value=Math.max(0,cv['BB']-cv['チェリー重複BB']);tab('an');calc()}
+function tab(x){['an','ct','th'].forEach(id=>document.getElementById(id).classList.toggle('hidden',id!==x));if(x==='th')drawTheory()}
+function save(){['model','g','bb','rb','diff','grape','cherry','crb','cbb','srb','sbb','style'].forEach(id=>localStorage.setItem('jug_'+id,G(id)))}
+function load(){['model','g','bb','rb','diff','grape','cherry','crb','cbb','srb','sbb','style'].forEach(id=>{let v=localStorage.getItem('jug_'+id);if(v!==null&&document.getElementById(id))document.getElementById(id).value=v})}
+
+/* 展開分析：独自理論は設定推測から分離し、観測データとして検証 */
+let TH=JSON.parse(localStorage.getItem('jugTheoryV1')||'null')||{events:[],signals:[],bonuses:[]};
+function tstore(){localStorage.setItem('jugTheoryV1',JSON.stringify(TH));}
+function tval(id){return +document.getElementById(id).value||0}
+function tevent(type){
+ let g=tval('tg')+1; document.getElementById('tg').value=g;
+ TH.events.push({g,type,diff:tval('tdiff'),max:tval('tmax'),ts:Date.now()});
+ if(TH.events.length>1500)TH.events=TH.events.slice(-1500);
+ autoSignal();tstore();drawTheory()
 }
-</script>
-</body></html>
+function tbonus(type){
+ let g=tval('tg'); TH.bonuses.push({g,type,ts:Date.now()});
+ TH.signals.forEach(s=>{if(s.result==null&&g>=s.g){let d=g-s.g;if(d<=100)s.result=d;else s.result=999}});
+ tstore();drawTheory()
+}
+function runLen(type){let n=0;for(let i=TH.events.length-1;i>=0&&TH.events[i].type===type;i--)n++;return n}
+function recent(n){return TH.events.slice(-n)}
+function densityScore(){
+ const a=recent(20),b=TH.events.slice(-70,-20);
+ const hit=x=>x.filter(e=>e.type==='G'||e.type==='R').length;
+ const da=a.length?hit(a)/a.length:0, db=b.length?hit(b)/b.length:0;
+ return {da,db,jump:Math.max(0,da-db)}
+}
+function scoreTheory(){
+ const gl=runLen('G'),rl=runLen('R'),d=densityScore(),drop=Math.max(0,tval('tmax')-tval('tdiff'));
+ let score=0,reasons=[];
+ if(gl>=5){score+=55;reasons.push(`ぶどう${gl}連`)}else if(gl===4){score+=38;reasons.push('ぶどう4連')}else if(gl===3){score+=20;reasons.push('ぶどう3連')}else if(gl===2){score+=8;reasons.push('ぶどう2連')}
+ if(rl>=4){score+=42;reasons.push(`リプレイ${rl}連`)}else if(rl===3){score+=20;reasons.push('リプレイ3連')}else if(rl===2){score+=8;reasons.push('リプレイ2連')}
+ const r20=recent(20);let clusters=0;for(let i=1;i<r20.length;i++)if((r20[i].type==='G'||r20[i].type==='R')&&(r20[i-1].type==='G'||r20[i-1].type==='R'))clusters++;
+ if(clusters>=6){score+=18;reasons.push('直近20Gで小役連が頻発')}else if(clusters>=3){score+=9;reasons.push('小役2〜3連が複数')}
+ if(d.jump>=.22){score+=18;reasons.push('小役密度が急上昇')}else if(d.jump>=.12){score+=9;reasons.push('小役密度が上昇')}
+ if(drop>=1200){score+=18;reasons.push(`最高差枚から-${drop}枚`)}else if(drop>=700){score+=9;reasons.push(`最高差枚から-${drop}枚`)}
+ // 特徴的な GGGG-R-GGG 近似
+ const pat=recent(8).map(e=>e.type).join('');
+ if(pat==='GGGGRGGG'){score+=35;reasons.push('ぶどう4連→リプレイ→ぶどう3連')}
+ return {score:Math.min(100,score),reasons,gl,rl,drop,d}
+}
+function autoSignal(){
+ const a=scoreTheory();let level=a.score>=75?'強':a.score>=45?'中':a.score>=25?'弱':'なし';
+ if(level==='なし')return;
+ let last=TH.signals[TH.signals.length-1];
+ if(last&&tval('tg')-last.g<15&&last.level===level)return;
+ TH.signals.push({g:tval('tg'),level,score:a.score,reasons:a.reasons,diff:tval('tdiff'),drop:a.drop,manual:false,result:null,ts:Date.now()})
+}
+function manualSignal(level){
+ const a=scoreTheory();TH.signals.push({g:tval('tg'),level,score:a.score,reasons:['手動記録',...a.reasons],diff:tval('tdiff'),drop:a.drop,manual:true,result:null,ts:Date.now()});tstore();drawTheory()
+}
+function statsFor(limit){
+ const done=TH.signals.filter(s=>s.result!=null);const hit=done.filter(s=>s.result<=limit).length;
+ return {n:done.length,hit,p:done.length?hit/done.length*100:0}
+}
+function drawTheory(){
+ const a=scoreTheory(),level=a.score>=75?'強':a.score>=45?'中':a.score>=25?'弱':'なし';
+ const cls=level==='強'?'strong':level==='中'?'mid':'weak';
+ document.getElementById('theorySignal').innerHTML=`<div class="card signal ${cls}"><div class="muted">現在の展開サイン</div><div class="phase">${level==='なし'?'通常範囲':level+' '+a.score+'/100'}</div><div style="margin-top:8px">${a.reasons.length?a.reasons.map(x=>`<span class="pill">${x}</span>`).join(''):'<span class="muted">目立つ小役集中はまだ検出していません。</span>'}</div><div class="muted" style="margin-top:9px">これはボーナス当選確率ではなく、独自仮説との一致度です。</div></div>`;
+ const s50=statsFor(50),s100=statsFor(100);
+ document.getElementById('theoryStats').innerHTML=`<div class="kpi"><span class="muted">判定済サイン</span><b>${s100.n}</b></div><div class="kpi"><span class="muted">50G以内</span><b>${s50.n?s50.p.toFixed(1)+'%':'—'}</b><span class="tiny">${s50.hit}/${s50.n}</span></div><div class="kpi"><span class="muted">100G以内</span><b>${s100.n?s100.p.toFixed(1)+'%':'—'}</b><span class="tiny">${s100.hit}/${s100.n}</span></div>`;
+ let h=[...TH.events.slice(-18)].reverse().map(e=>`<div style="padding:6px 0;border-bottom:1px solid #263244"><b>${e.g}G</b>　${e.type==='G'?'🍇ぶどう':e.type==='R'?'↻リプレイ':e.type==='C'?'🍒チェリー':'・その他'}</div>`).join('');
+ document.getElementById('theoryHistory').innerHTML=h||'<div class="muted" style="margin-top:8px">まだ記録がありません。</div>';
+ ['tg','tdiff','tmax'].forEach(id=>localStorage.setItem('jugTheory_'+id,document.getElementById(id).value))
+}
+function undoTheory(){if(!TH.events.length)return;TH.events.pop();document.getElementById('tg').value=Math.max(0,tval('tg')-1);tstore();drawTheory()}
+function resetTheory(){if(confirm('展開分析のイベント・サイン・検証成績をすべて初期化しますか？')){TH={events:[],signals:[],bonuses:[]};['tg','tdiff','tmax'].forEach(id=>document.getElementById(id).value=0);tstore();drawTheory()}}
+function loadTheory(){['tg','tdiff','tmax'].forEach(id=>{let v=localStorage.getItem('jugTheory_'+id);if(v!==null)document.getElementById(id).value=v});['tdiff','tmax'].forEach(id=>document.getElementById(id).addEventListener('change',()=>{drawTheory();tstore()}));drawTheory()}
+drawC();load();loadTheory();calc();
+</script></body></html>

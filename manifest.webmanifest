@@ -1,15 +1,20 @@
 {
-  "name": "JUGGLER SETTING ANALYZER",
-  "short_name": "JUGGLER判別",
-  "description": "ジャグラー機種別 設定推測・実戦カウンター",
-  "start_url": "./index.html",
-  "scope": "./",
+  "name": "JUGGLER SETTING ANALYZER + 展開分析",
+  "short_name": "JUGGLER分析",
+  "start_url": "./",
   "display": "standalone",
-  "background_color": "#0b0f14",
-  "theme_color": "#0b0f14",
-  "orientation": "portrait-primary",
+  "background_color": "#0b0e13",
+  "theme_color": "#0b0e13",
   "icons": [
-    {"src":"icon-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
-    {"src":"icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
   ]
 }
