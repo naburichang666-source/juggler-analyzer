@@ -256,6 +256,10 @@ nav,footer{background:#080a0d!important}
 #specBody th,#specBody td{vertical-align:middle!important;line-height:1.2!important}
 #specBody td:first-child{padding-top:10px!important;padding-bottom:10px!important}
 #specBody .setting-num{display:inline-flex!important;align-items:center!important;justify-content:center!important;width:1.4em;height:1.4em;line-height:1!important;font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif!important;font-weight:700!important;vertical-align:middle!important;transform:none!important;position:static!important}
+</style><style>
+#theoryStats{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+@media(max-width:700px){#theoryStats{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+#theoryStats .kpi{min-width:0}
 </style></head><body><div class="wrap">
 <h1>JUGGLER SETTING ANALYZER</h1><div class="sub">全機種校正版 / 機種別尤度 × 詳細REG × 実測ぶどう × 差枚逆算（弱補助）</div>
 <div class="tabs"><button onclick="tab('an')">設定推測</button><button class="secondary" onclick="tab('ct')">実戦カウンター</button><button class="secondary" onclick="tab('th')">展開分析</button><button class="secondary" onclick="showSpec()">📊 スペック</button></div>
@@ -280,7 +284,7 @@ nav,footer{background:#080a0d!important}
 <div class="card"><div class="muted">実戦カウンター ＋ 展開分析</div><div class="analyzer-brand-row">
 <img src="icon-192.png" alt="" class="analyzer-brand-icon">
 <div class="analyzer-brand-title"><span>★</span> JUGGLER ANALYZER <span>★</span></div></div>
-<div class="muted" id="liveModelDisplay" style="margin-bottom:3px;color:#d6b15c;font-weight:700"></div><div class="muted" style="font-weight:800;letter-spacing:.08em">LIVE COUNTER × 展開分析 <span style="font-size:10px;color:#7f8994">v23.3</span></div><div class="muted">ここだけ操作すれば、通常カウントと展開分析へ同時に記録します。</div></div>
+<div class="muted" id="liveModelDisplay" style="margin-bottom:3px;color:#d6b15c;font-weight:700"></div><div class="muted" style="font-weight:800;letter-spacing:.08em">LIVE COUNTER × 展開分析 <span style="font-size:10px;color:#7f8994">v23.4</span></div><div class="muted">ここだけ操作すれば、通常カウントと展開分析へ同時に記録します。</div></div>
 <div class="card"><div class="grid">
 <div><label>開始時 総ゲーム数</label><input id="liveStartG" type="number" min="0" value="0"></div>
 <div><label>現在 総ゲーム数</label><input id="liveG" type="number" min="0" value="0"><button type="button" class="mini-g-sync" onclick="syncCurrentG()">台のG数に補正</button><div class="g-quick-row"><button type="button" onclick="advanceBlankG(5)">＋5G</button><button type="button" onclick="advanceBlankG(10)">＋10G</button><button type="button" onclick="advanceBlankG(15)">＋15G</button><button type="button" onclick="advanceBlankG(20)">＋20G</button><button type="button" onclick="advanceBlankG(25)">＋25G</button></div></div>
@@ -339,7 +343,7 @@ nav,footer{background:#080a0d!important}
 </div>
 <div class="card">
  <b>理論の検証成績</b><div id="theoryStats" class="statgrid" style="margin-top:10px"></div>
- <div class="tiny" style="margin-top:8px">サイン後50G/100G以内のBB・RBを自動集計。母数が少ないうちは「期待度」として扱わず、観測結果として表示します。</div>
+ <div class="tiny" style="margin-top:8px">サイン後10G/20G/30G/40G/50G/100G以内のBB・RBを自動集計。母数が少ないうちは「期待度」として扱わず、観測結果として表示します。</div>
 </div>
 <div class="card">
  <div style="display:flex;justify-content:space-between;align-items:center"><b>直近イベント</b><button class="secondary" onclick="undoTheory()">1手戻す</button></div>
@@ -590,8 +594,9 @@ function drawTheory(){
  const a=scoreTheory(),level=a.score>=75?'強':a.score>=45?'中':a.score>=25?'弱':'なし';
  const cls=level==='強'?'strong':level==='中'?'mid':'weak';
  document.getElementById('theorySignal').innerHTML=`<div class="card signal ${cls}"><div class="muted">現在の展開サイン</div><div class="phase">${level==='なし'?'通常範囲':level+' '+a.score+'/100'}</div><div style="margin-top:8px">${a.reasons.length?a.reasons.map(x=>`<span class="pill">${x}</span>`).join(''):'<span class="muted">目立つ小役集中はまだ検出していません。</span>'}</div><div class="muted" style="margin-top:9px">これはボーナス当選確率ではなく、独自仮説との一致度です。</div></div>`;
- const s50=statsFor(50),s100=statsFor(100);
- document.getElementById('theoryStats').innerHTML=`<div class="kpi"><span class="muted">判定済サイン</span><b>${s100.n}</b></div><div class="kpi"><span class="muted">50G以内</span><b>${s50.n?s50.p.toFixed(1)+'%':'—'}</b><span class="tiny">${s50.hit}/${s50.n}</span></div><div class="kpi"><span class="muted">100G以内</span><b>${s100.n?s100.p.toFixed(1)+'%':'—'}</b><span class="tiny">${s100.hit}/${s100.n}</span></div>`;
+ const s10=statsFor(10),s20=statsFor(20),s30=statsFor(30),s40=statsFor(40),s50=statsFor(50),s100=statsFor(100);
+ const statCard=(label,x)=>`<div class="kpi"><span class="muted">${label}</span><b>${x.n?x.p.toFixed(1)+'%':'—'}</b><span class="tiny">${x.hit}/${x.n}</span></div>`;
+ document.getElementById('theoryStats').innerHTML=`<div class="kpi"><span class="muted">判定済サイン</span><b>${s100.n}</b></div>${statCard('10G以内',s10)}${statCard('20G以内',s20)}${statCard('30G以内',s30)}${statCard('40G以内',s40)}${statCard('50G以内',s50)}${statCard('100G以内',s100)}`;
  let h=[...TH.events.slice(-18)].reverse().map(e=>`<div style="padding:6px 0;border-bottom:1px solid #263244"><b>${e.g}G</b>　${e.type==='G'?'🍇ぶどう':e.type==='R'?'↻リプレイ':e.type==='C'?'🍒チェリー':e.type==='H'?'💥ハズレ区切り':'・その他'}</div>`).join('');
  document.getElementById('theoryHistory').innerHTML=h||'<div class="muted" style="margin-top:8px">まだ記録がありません。</div>';
  ['tg','tdiff','tmax'].forEach(id=>localStorage.setItem('jugTheory_'+id,document.getElementById(id).value))
