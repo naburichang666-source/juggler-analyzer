@@ -167,6 +167,11 @@ nav,footer{background:#080a0d!important}
 }
 </style>
 
+
+<style>
+.mini-g-sync{margin-top:6px!important;width:100%!important;min-height:34px!important;padding:6px 8px!important;font-size:12px!important;background:#242b33!important;border:1px solid #66717d!important}
+</style>
+
 </head><body><div class="wrap">
 <h1>JUGGLER SETTING ANALYZER</h1><div class="sub">全機種校正版 / 機種別尤度 × 詳細REG × 実測ぶどう × 差枚逆算（弱補助）</div>
 <div class="tabs"><button onclick="tab('an')">設定推測</button><button class="secondary" onclick="tab('ct')">実戦カウンター</button><button class="secondary" onclick="tab('th')">展開分析</button><button class="secondary" onclick="showSpec()">📊 スペック</button></div>
@@ -185,10 +190,10 @@ nav,footer{background:#080a0d!important}
 <div class="card"><div class="muted">実戦カウンター ＋ 展開分析</div><div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:7px">
 <img src="icon-192.png" alt="" style="width:52px;height:52px;border-radius:12px;border:1px solid #747b83;box-shadow:0 3px 12px #000">
 <div class="big" style="font-size:22px">JUGGLER ANALYZER</div></div>
-<div class="muted" style="font-weight:800;letter-spacing:.08em">LIVE COUNTER × 展開分析 <span style="font-size:10px;color:#7f8994">v18</span></div><div class="muted">ここだけ操作すれば、通常カウントと展開分析へ同時に記録します。</div></div>
+<div class="muted" style="font-weight:800;letter-spacing:.08em">LIVE COUNTER × 展開分析 <span style="font-size:10px;color:#7f8994">v19</span></div><div class="muted">ここだけ操作すれば、通常カウントと展開分析へ同時に記録します。</div></div>
 <div class="card"><div class="grid">
 <div><label>開始時 総ゲーム数</label><input id="liveStartG" type="number" min="0" value="0"></div>
-<div><label>現在 総ゲーム数</label><input id="liveG" type="number" min="0" value="0"></div>
+<div><label>現在 総ゲーム数</label><input id="liveG" type="number" min="0" value="0"><button type="button" class="mini-g-sync" onclick="syncCurrentG()">台のG数に補正</button></div>
 <div><label>推定差枚</label><input id="liveDiff" type="number" value="0"></div>
 <div><label>本日最高差枚</label><input id="liveMax" type="number" value="0"></div>
 </div><div class="muted" style="margin-top:8px">開始時の台データ総Gを一度入力してください。以後は小役・ハズレ・その他を押すたび現在総Gを自動加算し、推定差枚も役に応じて更新します。</div></div>
@@ -381,12 +386,11 @@ function scoreTheory(){
  const gl=runLen('G'),rl=runLen('R'),d=densityScore(),drop=Math.max(0,tval('tmax')-tval('tdiff'));
  let score=0,reasons=[];
 
- // 同一役の連続評価
+ // 同一役の連続
  if(gl>=5){score+=55;reasons.push(`ぶどう${gl}連`)}else if(gl===4){score+=38;reasons.push('ぶどう4連')}else if(gl===3){score+=20;reasons.push('ぶどう3連')}else if(gl===2){score+=8;reasons.push('ぶどう2連')}
  if(rl>=4){score+=42;reasons.push(`リプレイ${rl}連`)}else if(rl===3){score+=20;reasons.push('リプレイ3連')}else if(rl===2){score+=8;reasons.push('リプレイ2連')}
 
- // v18: ぶどうとリプレイを同じ「小役連」として評価。
- // H(ハズレ区切り)が来るまでG/Rが続く限り、役が切り替わっても連続評価を落とさない。
+ // G/Rは混合でも小役連として扱う
  let mixed=0;
  for(let i=TH.events.length-1;i>=0;i--){
    const t=TH.events[i].type;
@@ -399,6 +403,32 @@ function scoreTheory(){
  else if(mixed===3){score+=14;reasons.push('ぶどう・リプレイ小役3連')}
  else if(mixed===2){score+=6;reasons.push('ぶどう・リプレイ小役2連')}
 
+ // v19: ハズレ区切りで即リセットしない「小役余力」。
+ // 直近の区切り以降だけでなく、直近の小役集中から積み上がった純増相当を保持。
+ // G=+5枚、R=0枚、C=-1枚。現在総Gを手動補正した場合は、
+ // 記録済み最終Gとの差を未記録通常G(-3枚/G)として余力から消費する。
+ let bank=0, peakBank=0, lastEventG=null;
+ for(const e of TH.events){
+   if(lastEventG!==null && Number(e.g)>lastEventG){
+     const gap=Math.max(0,Number(e.g)-lastEventG-1);
+     bank=Math.max(0,bank-gap*3);
+   }
+   if(e.type==='G')bank+=5;
+   else if(e.type==='C')bank=Math.max(0,bank-1);
+   // RとHは余力を直接減らさない。Hは「連が切れた」印だけ。
+   peakBank=Math.max(peakBank,bank);
+   lastEventG=Number(e.g)||lastEventG;
+ }
+ const nowG=tval('tg');
+ if(lastEventG!==null && nowG>lastEventG){
+   bank=Math.max(0,bank-(nowG-lastEventG)*3);
+ }
+ if(bank>=30){score+=30;reasons.push(`小役余力 +${bank}枚`)}
+ else if(bank>=20){score+=22;reasons.push(`小役余力 +${bank}枚`)}
+ else if(bank>=10){score+=14;reasons.push(`小役余力 +${bank}枚`)}
+ else if(bank>0){score+=6;reasons.push(`小役余力 +${bank}枚`)}
+ else if(peakBank>0){reasons.push('小役余力を消化')}
+
  const r20=recent(20);let clusters=0;
  for(let i=1;i<r20.length;i++)if((r20[i].type==='G'||r20[i].type==='R')&&(r20[i-1].type==='G'||r20[i-1].type==='R'))clusters++;
  if(clusters>=6){score+=18;reasons.push('直近20Gで小役連が頻発')}else if(clusters>=3){score+=9;reasons.push('小役2〜3連が複数')}
@@ -407,7 +437,7 @@ function scoreTheory(){
 
  const pat=recent(8).map(e=>e.type).join('');
  if(pat==='GGGGRGGG'){score+=35;reasons.push('ぶどう4連→リプレイ→ぶどう3連')}
- return {score:Math.min(100,score),reasons,gl,rl,mixed,drop,d}
+ return {score:Math.min(100,score),reasons,gl,rl,mixed,bank,peakBank,drop,d}
 }
 function autoSignal(){
  const a=scoreTheory();let level=a.score>=75?'強':a.score>=45?'中':a.score>=25?'弱':'なし';
@@ -588,6 +618,16 @@ function applyLiveDelta(type){
  const m=document.getElementById('liveMax');
  if(m && Number(e.value)>Number(m.value||0))m.value=Number(e.value);
 }
+function syncCurrentG(){
+ const e=document.getElementById('liveG');if(!e)return;
+ const raw=prompt('台に表示されている現在の総ゲーム数を入力',String(Number(e.value)||0));
+ if(raw===null)return;
+ if(!/^\d+$/.test(raw.trim())){alert('0以上の整数で入力してください。');return}
+ const n=parseInt(raw,10),start=Number(document.getElementById('liveStartG')?.value)||0;
+ if(n<start){alert('開始時総ゲーム数以上で入力してください。');return}
+ e.value=n;persistAll();try{drawLiveSignal();drawTheory()}catch(err){}
+}
+
 function setStartGames(){
  const st=document.getElementById('liveStartG'),g=document.getElementById('liveG');
  if(!st||!g)return;
