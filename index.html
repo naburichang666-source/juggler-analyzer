@@ -246,12 +246,28 @@ nav,footer{background:#080a0d!important}
  .analyzer-brand-icon{width:44px!important;height:44px!important;flex-basis:44px!important}
  .analyzer-brand-title{font-size:14px!important}
 }
+</style><style>
+.signed-diff-wrap{display:grid;grid-template-columns:64px minmax(0,1fr);gap:6px;align-items:center}
+.signed-diff-wrap select,.signed-diff-wrap input{width:100%;box-sizing:border-box}
+.signed-diff-wrap select{font-size:20px;font-weight:900;text-align:center;text-align-last:center;padding-left:4px;padding-right:4px}
+@media(max-width:430px){.signed-diff-wrap{grid-template-columns:58px minmax(0,1fr);gap:5px}.signed-diff-wrap select{font-size:18px}}
+</style><style>
+#specBody table{font-variant-numeric:tabular-nums}
+#specBody th,#specBody td{vertical-align:middle!important;line-height:1.2!important}
+#specBody td:first-child{padding-top:10px!important;padding-bottom:10px!important}
+#specBody .setting-num{display:inline-flex!important;align-items:center!important;justify-content:center!important;width:1.4em;height:1.4em;line-height:1!important;font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif!important;font-weight:700!important;vertical-align:middle!important;transform:none!important;position:static!important}
 </style></head><body><div class="wrap">
 <h1>JUGGLER SETTING ANALYZER</h1><div class="sub">全機種校正版 / 機種別尤度 × 詳細REG × 実測ぶどう × 差枚逆算（弱補助）</div>
 <div class="tabs"><button onclick="tab('an')">設定推測</button><button class="secondary" onclick="tab('ct')">実戦カウンター</button><button class="secondary" onclick="tab('th')">展開分析</button><button class="secondary" onclick="showSpec()">📊 スペック</button></div>
 <section id="an"><div class="card"><div class="grid">
 <div><label>機種</label><select id="model"></select></div><div><label>開始時 総ゲーム数</label><input id="startG" type="number" min="0" value="" placeholder="座った時の総G"></div><div><label>現在 総ゲーム数</label><input id="g" type="number" min="0" value="" placeholder="現在の総G"></div><div><label>打ち方</label><select id="style"><option value="cherry">チェリー狙い</option><option value="random">適当打ち</option><option value="full">完全技術介入</option></select></div>
-<div><label>BIG</label><input id="bb" type="number" min="0" value=""></div><div><label>REG</label><input id="rb" type="number" min="0" value=""></div><div><label>差枚数（±）</label><input id="diff" type="number" value=""></div>
+<div><label>BIG</label><input id="bb" type="number" min="0" value=""></div><div><label>REG</label><input id="rb" type="number" min="0" value=""></div><div><label>差枚数</label><div class="signed-diff-wrap">
+<select id="diffSign" aria-label="差枚数のプラス・マイナス">
+<option value="+">＋</option><option value="-">－</option>
+</select>
+<input id="diffAbs" type="number" inputmode="numeric" min="0" step="1" value="" placeholder="枚数">
+<input id="diff" type="hidden" value="">
+</div></div>
 <div><label>ぶどう回数（実測・任意）</label><input id="grape" type="number" min="0" placeholder="未計測なら空欄"></div><div><label>チェリー回数（任意）</label><input id="cherry" type="number" min="0" placeholder="任意"></div><div><label>チェリー重複REG（任意）</label><input id="crb" type="number" min="0" placeholder="任意"></div>
 <div><label>チェリー重複BIG（任意）</label><input id="cbb" type="number" min="0" placeholder="任意"></div><div><label>単独REG（任意）</label><input id="srb" type="number" min="0" placeholder="未入力ならREG−重複REG"></div><div><label>単独BIG（任意）</label><input id="sbb" type="number" min="0" placeholder="未入力ならBIG−重複BIG"></div>
 </div><br>
@@ -264,7 +280,7 @@ nav,footer{background:#080a0d!important}
 <div class="card"><div class="muted">実戦カウンター ＋ 展開分析</div><div class="analyzer-brand-row">
 <img src="icon-192.png" alt="" class="analyzer-brand-icon">
 <div class="analyzer-brand-title"><span>★</span> JUGGLER ANALYZER <span>★</span></div></div>
-<div class="muted" style="font-weight:800;letter-spacing:.08em">LIVE COUNTER × 展開分析 <span style="font-size:10px;color:#7f8994">v22.3</span></div><div class="muted">ここだけ操作すれば、通常カウントと展開分析へ同時に記録します。</div></div>
+<div class="muted" id="liveModelDisplay" style="margin-bottom:3px;color:#d6b15c;font-weight:700"></div><div class="muted" style="font-weight:800;letter-spacing:.08em">LIVE COUNTER × 展開分析 <span style="font-size:10px;color:#7f8994">v23.3</span></div><div class="muted">ここだけ操作すれば、通常カウントと展開分析へ同時に記録します。</div></div>
 <div class="card"><div class="grid">
 <div><label>開始時 総ゲーム数</label><input id="liveStartG" type="number" min="0" value="0"></div>
 <div><label>現在 総ゲーム数</label><input id="liveG" type="number" min="0" value="0"><button type="button" class="mini-g-sync" onclick="syncCurrentG()">台のG数に補正</button><div class="g-quick-row"><button type="button" onclick="advanceBlankG(5)">＋5G</button><button type="button" onclick="advanceBlankG(10)">＋10G</button><button type="button" onclick="advanceBlankG(15)">＋15G</button><button type="button" onclick="advanceBlankG(20)">＋20G</button><button type="button" onclick="advanceBlankG(25)">＋25G</button></div></div>
@@ -344,6 +360,23 @@ const M={
 'ジャグラーガールズSS':{b:[[273.1,381.0],[270.8,350.5],[260.1,316.6],[250.1,281.3],[243.6,270.8],[226.0,252.1]],gr:[5.98,5.98,5.98,5.98,5.88,5.83],pay:[240,96]},
 'ミスタージャグラー':{b:[[268.6,374.5],[267.5,354.2],[260.1,331.0],[249.2,291.3],[240.1,257.0],[237.4,237.4]],gr:[6.29,6.22,6.15,6.09,6.02,5.96],pay:[240,96]},
 'ウルトラミラクルジャグラー':{b:[[267.5,425.6],[261.1,402.1],[256.0,350.5],[242.7,322.8],[233.2,297.9],[216.3,277.7]],gr:[5.93,5.93,5.93,5.93,5.87,5.81],pay:[240,96]}}
+
+const ROLE_PAY={
+ 'ネオアイムジャグラーEX':{grape:8,cherry:1,replay:3},
+ 'アイムジャグラーEX（6号機）':{grape:8,cherry:1,replay:3},
+ 'マイジャグラーV':{grape:8,cherry:1,replay:3},
+ 'ファンキージャグラー2':{grape:8,cherry:1,replay:3},
+ 'ゴーゴージャグラー3':{grape:8,cherry:1,replay:3},
+ 'ハッピージャグラーV III':{grape:8,cherry:1,replay:3},
+ 'ジャグラーガールズSS':{grape:8,cherry:1,replay:3},
+ 'ミスタージャグラー':{grape:8,cherry:1,replay:3},
+ 'ウルトラミラクルジャグラー':{grape:8,cherry:1,replay:3}
+};
+function currentModelName(){return document.getElementById('model')?.value||'マイジャグラーV'}
+function currentRoleSpec(){
+ const name=currentModelName(),r=ROLE_PAY[name]||{grape:8,cherry:1,replay:3},m=M[name]||M['マイジャグラーV'];
+ return {name,grape:r.grape,cherry:r.cherry,replay:r.replay,big:m.pay[0],reg:m.pay[1]};
+}
 const META={
 'アイムジャグラーEX（6号機）':{q:'A',grw:.65,note:'REG中心。ぶどうは設定1〜5ほぼ同等・設定6優遇のため、6判別の補助として使用。REGの単独/重複分解は必須にしない。'},
 'ネオアイムジャグラーEX':{q:'A',grw:.65,note:'ガリぞう氏の逆算値を採用。REG中心、ぶどうは設定6判別の補助。単独REGと重複REGは比率がほぼ一定のため合算REGも重視。'},
@@ -396,7 +429,7 @@ const RATE={
 'ジャグラーガールズSS':[97.0,97.9,99.9,102.1,104.0,107.5],
 'ミスタージャグラー':[97.0,98.0,99.8,102.7,105.5,107.3],
 'ウルトラミラクルジャグラー':[97.0,98.1,99.8,102.1,104.5,108.1]};
-function showSpec(){const name=sel.value,m=M[name],r=RATE[name]||[];document.getElementById('specTitle').textContent=name;let rows=m.b.map((x,i)=>{const comb=1/(1/x[0]+1/x[1]);const gr=m.gr?'1/'+m.gr[i].toFixed(2):'—';return `<tr><td><b>${i+1}</b></td><td>1/${x[0]}</td><td>1/${x[1]}</td><td>1/${comb.toFixed(1)}</td><td>${gr}</td><td>${r[i]!=null?r[i].toFixed(1)+'%':'—'}</td></tr>`}).join('');document.getElementById('specBody').innerHTML=`<table style="width:100%;border-collapse:collapse;min-width:620px;text-align:center"><thead><tr style="color:#ffd84d"><th>設定</th><th>BIG</th><th>REG</th><th>合算</th><th>ぶどう</th><th>出玉率</th></tr></thead><tbody>${rows}</tbody></table><div class="muted" style="margin-top:12px">— は、現在このツールで設定判別用の確定値として採用していない項目です。BIG・REG・出玉率は機種公表値を優先。ぶどうは解析・大量実戦値を採用している機種のみ表示します。<br><br><b>判別データ品質 ${META[name]?.q||'C'}</b>：${META[name]?.note||''}${EMP6[name]?'<br>'+EMP6[name]:''}${BACKTEST[name]?'<br><b>大量実戦検証</b>：'+BACKTEST[name]:''}</div>`;document.querySelectorAll('#specBody td,#specBody th').forEach(e=>{e.style.padding='10px 8px';e.style.borderBottom='1px solid #2b3544'});document.getElementById('specModal').classList.remove('hidden')}function hideSpec(){document.getElementById('specModal').classList.add('hidden')}
+function showSpec(){const name=sel.value,m=M[name],r=RATE[name]||[];document.getElementById('specTitle').textContent=name;let rows=m.b.map((x,i)=>{const comb=1/(1/x[0]+1/x[1]);const gr=m.gr?'1/'+m.gr[i].toFixed(2):'—';return `<tr><td><span class="setting-num">${i+1}</span></td><td>1/${x[0]}</td><td>1/${x[1]}</td><td>1/${comb.toFixed(1)}</td><td>${gr}</td><td>${r[i]!=null?r[i].toFixed(1)+'%':'—'}</td></tr>`}).join('');document.getElementById('specBody').innerHTML=`<table style="width:100%;border-collapse:collapse;min-width:620px;text-align:center"><thead><tr style="color:#ffd84d"><th>設定</th><th>BIG</th><th>REG</th><th>合算</th><th>ぶどう</th><th>出玉率</th></tr></thead><tbody>${rows}</tbody></table><div class="muted" style="margin-top:12px">— は、現在このツールで設定判別用の確定値として採用していない項目です。BIG・REG・出玉率は機種公表値を優先。ぶどうは解析・大量実戦値を採用している機種のみ表示します。<br><br><b>判別データ品質 ${META[name]?.q||'C'}</b>：${META[name]?.note||''}${EMP6[name]?'<br>'+EMP6[name]:''}${BACKTEST[name]?'<br><b>大量実戦検証</b>：'+BACKTEST[name]:''}</div>`;document.querySelectorAll('#specBody td,#specBody th').forEach(e=>{e.style.padding='10px 8px';e.style.borderBottom='1px solid #2b3544'});document.getElementById('specModal').classList.remove('hidden')}function hideSpec(){document.getElementById('specModal').classList.add('hidden')}
 const sel=document.getElementById('model');Object.keys(M).forEach(x=>sel.add(new Option(x,x)));sel.value='マイジャグラーV';
 function G(x){return document.getElementById(x).value}function ll(n,k,p){if(k<0||k>n)return-1e99;return k*Math.log(p)+(n-k)*Math.log(1-p)}
 function reverseGrape(g,bb,rb,diff,pay,style){const rp=1/7.298*3;let cp,bp,pp;if(style==='random'){cp=1/51.99*2;bp=1/4608*14;pp=1/10186*10}else if(style==='full'){cp=1/34.66*2;bp=1/1024*14;pp=1/1024*10}else{cp=1/34.66*2;bp=0;pp=0}const other=g*(rp+cp+bp+pp);const need=diff+g*3-bb*pay[0]-rb*pay[1]-other;const cnt=need/8;return cnt>0?{cnt,p:g/cnt}:null}
@@ -418,7 +451,7 @@ function syncEstimateStart(){
  const a=document.getElementById('startG'),b=document.getElementById('liveStartG'),g=document.getElementById('liveG');if(!a||!b)return;
  b.value=Number(a.value)||0;if(TH.events.length===0&&g)g.value=Number(a.value)||0;persistAll();
 }
-function resetEstimate(){
+function resetEstimate(){const da=document.getElementById('diffAbs'),ds=document.getElementById('diffSign');if(da)da.value='';if(ds)ds.value='+';
  if(!confirm('設定推測の入力内容をすべてリセットしますか？'))return;
  ['startG','g','bb','rb','diff','grape','cherry','crb','cbb','srb','sbb'].forEach(id=>{
    const e=document.getElementById(id); if(e)e.value='';
@@ -715,9 +748,9 @@ function undoLastLive(){
 }
 
 function liveNetDelta(type){
- // 通常時の1Gあたり推定差枚。3枚掛け基準。
- // ぶどう8枚→+5、チェリー2枚→-1、リプレイ→0、ハズレ/その他→-3。
- const d={G:5,C:-1,R:0,H:0,X:-3};
+ const r=currentRoleSpec();
+ // 通常時は3枚掛け。払出し－3枚で差枚化。リプレイは再遊技なので0。
+ const d={G:r.grape-3,C:r.cherry-3,R:0,H:0,X:-3};
  return d[type]??0;
 }
 function applyLiveDelta(type){
@@ -739,13 +772,26 @@ function advanceBlankG(n){
  try{drawLiveSignal();drawTheory()}catch(e){console.error(e)}
  playCountTone('plus');
 }
+function applyDirectGCorrection(oldG,newG){
+ const delta=newG-oldG,d=document.getElementById('liveDiff');
+ if(!d||delta===0)return;
+ // 直接G数を進めた分は「未記録の通常消化」として3枚/Gを消費。
+ // G数を戻した場合は、その分の投入枚数を差枚へ戻す。
+ const diffDelta=-(delta*3);
+ d.value=(Number(d.value)||0)+diffDelta;
+ const m=document.getElementById('liveMax');
+ if(m&&Number(d.value)>Number(m.value||0))m.value=Number(d.value);
+ pushLiveHistory({type:'GSYNC',advanceG:delta,diffDelta,ts:Date.now()});
+}
 function syncCurrentG(){
  const e=document.getElementById('liveG');if(!e)return;
- const raw=prompt('台に表示されている現在の総ゲーム数を入力',String(Number(e.value)||0));
+ const oldG=Number(e.value)||0;
+ const raw=prompt('台に表示されている現在の総ゲーム数を入力',String(oldG));
  if(raw===null)return;
  if(!/^\d+$/.test(raw.trim())){alert('0以上の整数で入力してください。');return}
  const n=parseInt(raw,10),start=Number(document.getElementById('liveStartG')?.value)||0;
  if(n<start){alert('開始時総ゲーム数以上で入力してください。');return}
+ applyDirectGCorrection(oldG,n);
  e.value=n;persistAll();try{drawLiveSignal();drawTheory()}catch(err){}
 }
 
@@ -803,12 +849,16 @@ function recordBonusLink(type,g,bonusTs){
 }
 function bonusLive(t){
  const key=t==='B'?'BB':'RB';cv[key]=(Number(cv[key])||0)+1;
+ const rs=currentRoleSpec(),gain=t==='B'?rs.big:rs.reg;
+ const de=document.getElementById('liveDiff');if(de){de.value=(Number(de.value)||0)+gain;const mx=document.getElementById('liveMax');if(mx&&Number(de.value)>Number(mx.value||0))mx.value=Number(de.value);}
  const g=Number(document.getElementById('liveG')?.value)||0,bonusTs=Date.now();
  TH.bonuses.push({g,type:t,ts:bonusTs});recordBonusLink(t,g,bonusTs);pushLiveHistory({type:key,advanceG:false,bonusTs});
  settleLive();updateVisibleCounts();persistAll();countFeedback(key,false);try{drawLiveSignal()}catch(e){}
 }
 function chBonusLive(t){
  const bkey=t==='B'?'BB':'RB',ckey=t==='B'?'チェリー重複BB':'チェリー重複RB',hist=t==='B'?'CBB':'CRB';
+ const rs=currentRoleSpec(),gain=(t==='B'?rs.big:rs.reg)+(rs.cherry-3);
+ const de=document.getElementById('liveDiff');if(de){de.value=(Number(de.value)||0)+gain;const mx=document.getElementById('liveMax');if(mx&&Number(de.value)>Number(mx.value||0))mx.value=Number(de.value);}
  cv['チェリー']=(Number(cv['チェリー'])||0)+1;cv[bkey]=(Number(cv[bkey])||0)+1;cv[ckey]=(Number(cv[ckey])||0)+1;
  const g=Number(document.getElementById('liveG')?.value)||0,bonusTs=Date.now();
  TH.bonuses.push({g,type:t,ts:bonusTs});recordBonusLink(t,g,bonusTs);pushLiveHistory({type:hist,advanceG:false,bonusTs});
@@ -857,4 +907,42 @@ function startApp(){
 }
 startApp();
 
+
+function updateLiveModelDisplay(){
+ const e=document.getElementById('liveModelDisplay'),r=currentRoleSpec();if(!e)return;
+ e.textContent=`現在の機種：${r.name}　🍇${r.grape}枚 / 🍒${r.cherry}枚 / BIG約${r.big}枚 / REG約${r.reg}枚`;
+}
+document.getElementById('model')?.addEventListener('change',()=>{updateLiveModelDisplay();persistAll()});
+setTimeout(updateLiveModelDisplay,0);
+
+function syncSignedDiff(){
+ const sign=document.getElementById('diffSign')?.value||'+';
+ const raw=document.getElementById('diffAbs')?.value??'';
+ const hidden=document.getElementById('diff');if(!hidden)return;
+ if(raw===''){hidden.value='';return}
+ const n=Math.max(0,Math.trunc(Number(raw)||0));
+ hidden.value=String(sign==='-'?-n:n);
+}
+function loadSignedDiffFromHidden(){
+ const h=document.getElementById('diff'),a=document.getElementById('diffAbs'),sg=document.getElementById('diffSign');
+ if(!h||!a||!sg)return;
+ if(h.value===''){a.value='';sg.value='+';return}
+ const n=Number(h.value)||0;sg.value=n<0?'-':'+';a.value=String(Math.abs(n));
+}
+document.getElementById('diffSign')?.addEventListener('change',()=>{syncSignedDiff();persistAll()});
+document.getElementById('diffAbs')?.addEventListener('input',()=>{syncSignedDiff();persistAll()});
+setTimeout(loadSignedDiffFromHidden,0);
+
+(function(){
+ const g=document.getElementById('liveG');if(!g)return;
+ let before=Number(g.value)||0,editing=false;
+ g.addEventListener('focus',()=>{before=Number(g.value)||0;editing=true});
+ g.addEventListener('change',()=>{
+   if(!editing)return;
+   const after=Number(g.value)||0,start=Number(document.getElementById('liveStartG')?.value)||0;
+   if(after<start){g.value=before;editing=false;return}
+   applyDirectGCorrection(before,after);before=after;editing=false;
+   persistAll();try{drawLiveSignal();drawTheory()}catch(e){}
+ });
+})();
 </script><div id="liveHistoryModal" class="history-modal"><div class="history-sheet"><div class="history-head"><b>小役履歴・判定</b><button type="button" onclick="closeLiveHistory()">閉じる</button></div><div id="liveHistoryList" class="history-list"></div></div></div></body></html>
