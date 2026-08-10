@@ -1,0 +1,99 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>JUGGLER Setting Analyzer - Empirical Calibration</title>
+<style>:root{--bg:#0b0e13;--card:#151b24;--line:#2b3544;--text:#f5f7fa;--muted:#9aa7b8;--gold:#ffd84d;--green:#32d583;--red:#ff5d68;--blue:#57a6ff}*{box-sizing:border-box}body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:linear-gradient(#090c11,#101620);color:var(--text);margin:0;padding:14px}.wrap{max-width:980px;margin:auto}h1{font-size:25px;margin:8px 0;color:var(--gold)}.sub{color:var(--muted);font-size:12px;margin-bottom:12px}.tabs{display:flex;gap:8px;position:sticky;top:0;background:#0b0e13e8;padding:8px 0;z-index:3}.tabs button{width:auto;flex:1}.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin:10px 0;box-shadow:0 8px 24px #0004}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}label{display:block;font-size:12px;color:#b3bdca;margin-bottom:4px}input,select{width:100%;padding:12px;border-radius:10px;border:1px solid #3b485a;background:#0b1017;color:#fff;font-size:16px}button{padding:12px;border:0;border-radius:10px;background:var(--gold);color:#111;font-weight:800;font-size:15px;cursor:pointer}.secondary{background:#273244;color:#fff}.danger{background:#5c2630;color:#fff}.row{display:flex;align-items:center;gap:8px;margin:9px 0}.bar{height:19px;background:#273140;border-radius:10px;flex:1;overflow:hidden}.fill{height:100%;background:linear-gradient(90deg,var(--green),var(--gold))}.pct{width:60px;text-align:right}.big{font-size:27px;font-weight:900}.muted{color:var(--muted);font-size:12px}.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.kpi{background:#0e141d;border:1px solid #263244;border-radius:12px;padding:10px}.kpi b{display:block;font-size:19px;margin-top:3px}.countgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.counter{background:#101720;border:1px solid #2b3747;border-radius:12px;padding:10px;text-align:center}.counter .num{font-size:27px;font-weight:900}.counter button{width:100%;margin-top:7px}.good{color:#66e39e}.warn{color:#ffd76a}.bad{color:#ff7b84}.hidden{display:none}.note{border-left:3px solid var(--blue);padding-left:10px}.source{font-size:11px;color:#8592a5}.flex{display:flex;gap:8px}.flex>*{flex:1}@media(max-width:700px){.grid{grid-template-columns:1fr 1fr}.kpis{grid-template-columns:1fr 1fr}.countgrid{grid-template-columns:1fr 1fr}}@media(max-width:420px){.grid{grid-template-columns:1fr}.countgrid{grid-template-columns:1fr 1fr}}</style></head><body><div class="wrap">
+<h1>JUGGLER SETTING ANALYZER</h1><div class="sub">全機種校正版 / 機種別尤度 × 詳細REG × 実測ぶどう × 差枚逆算（弱補助）</div>
+<div class="tabs"><button onclick="tab('an')">設定推測</button><button class="secondary" onclick="tab('ct')">実戦カウンター</button><button class="secondary" onclick="showSpec()">📊 スペック</button></div>
+<section id="an"><div class="card"><div class="grid">
+<div><label>機種</label><select id="model"></select></div><div><label>総回転数</label><input id="g" type="number" min="0" value="6000"></div><div><label>打ち方</label><select id="style"><option value="cherry">チェリー狙い</option><option value="random">適当打ち</option><option value="full">完全技術介入</option></select></div>
+<div><label>BIG</label><input id="bb" type="number" min="0" value="24"></div><div><label>REG</label><input id="rb" type="number" min="0" value="25"></div><div><label>差枚数（±）</label><input id="diff" type="number" value="1000"></div>
+<div><label>ぶどう回数（実測・任意）</label><input id="grape" type="number" min="0" placeholder="未計測なら空欄"></div><div><label>チェリー回数（任意）</label><input id="cherry" type="number" min="0" placeholder="任意"></div><div><label>チェリー重複REG（任意）</label><input id="crb" type="number" min="0" placeholder="任意"></div>
+<div><label>チェリー重複BIG（任意）</label><input id="cbb" type="number" min="0" placeholder="任意"></div><div><label>単独REG（任意）</label><input id="srb" type="number" min="0" placeholder="未入力ならREG−重複REG"></div><div><label>単独BIG（任意）</label><input id="sbb" type="number" min="0" placeholder="未入力ならBIG−重複BIG"></div>
+</div><br><button style="width:100%" onclick="calc()">設定を推測する</button></div><div id="out"></div></section>
+<section id="ct" class="hidden"><div class="card"><div class="countgrid" id="counters"></div><br><div class="flex"><button onclick="applyCounters()">推測画面へ反映</button><button class="danger" onclick="resetCounters()">カウンター初期化</button></div></div><div class="card muted">ボーナス成立時は BB / RB を加算し、チェリー重複なら対応する重複ボタンも加算してください。ぶどう・チェリーは通常時にカウントします。</div></section>
+<div id="specModal" class="hidden" style="position:fixed;inset:0;background:#000b;z-index:20;padding:16px;overflow:auto" onclick="if(event.target===this)hideSpec()"><div class="card" style="max-width:820px;margin:4vh auto"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><div><div class="muted">機種別スペック</div><div id="specTitle" class="big" style="font-size:22px"></div></div><button class="secondary" onclick="hideSpec()">✕ 閉じる</button></div><div id="specBody" style="overflow-x:auto;margin-top:12px"></div></div></div>
+<div class="card note"><b>計算上の注意</b><div class="muted">「設定期待度」は各設定を同じ事前確率とした統計的な相対尤度です。ホール配分・イベント・台履歴などは含みません。差枚ぶどうは推定値なので、実測ぶどうがある場合は実測値を優先します。短いゲーム数では数値が大きく振れます。</div></div>
+</div><script>
+const M={
+'ネオアイムジャグラーEX':{b:[[273.1,439.8],[269.7,399.6],[269.7,331.0],[259.0,315.1],[259.0,255.0],[255.0,255.0]],gr:[6.02,6.02,6.02,6.02,6.02,5.78],pay:[252,96]},
+'アイムジャグラーEX（6号機）':{b:[[273.1,439.8],[269.7,399.6],[269.7,331.0],[259.0,315.1],[259.0,255.0],[255.0,255.0]],gr:[6.03,6.02,6.03,6.02,6.03,5.79],pay:[252,96]},
+'マイジャグラーV':{b:[[273.1,409.6],[270.8,385.5],[266.4,336.1],[254.0,290.0],[240.1,268.6],[229.1,229.1]],gr:[5.90,5.85,5.80,5.78,5.76,5.66],pay:[240,96]},
+'ファンキージャグラー2':{b:[[266.4,439.8],[259.0,407.1],[256.0,366.1],[249.2,322.8],[240.1,299.3],[219.9,262.1]],gr:[5.94,5.93,5.88,5.83,5.75,5.66],pay:[240,96]},
+'ゴーゴージャグラー3':{b:[[259.0,354.2],[258.0,332.7],[257.0,306.2],[254.0,268.6],[247.3,247.3],[234.9,234.9]],gr:[6.25,6.20,6.15,6.07,6.00,5.92],pay:[240,96]},
+'ハッピージャグラーV III':{b:[[273.1,397.2],[270.8,362.1],[263.2,332.7],[254.0,300.6],[239.2,273.1],[226.0,256.0]],gr:[6.04,6.01,5.98,5.84,5.81,5.79],pay:[240,96]},
+'ジャグラーガールズSS':{b:[[273.1,381.0],[270.8,350.5],[260.1,316.6],[250.1,281.3],[243.6,270.8],[226.0,252.1]],gr:[5.98,5.98,5.98,5.98,5.88,5.83],pay:[240,96]},
+'ミスタージャグラー':{b:[[268.6,374.5],[267.5,354.2],[260.1,331.0],[249.2,291.3],[240.1,257.0],[237.4,237.4]],gr:[6.29,6.22,6.15,6.09,6.02,5.96],pay:[240,96]},
+'ウルトラミラクルジャグラー':{b:[[267.5,425.6],[261.1,402.1],[256.0,350.5],[242.7,322.8],[233.2,297.9],[216.3,277.7]],gr:[5.93,5.93,5.93,5.93,5.87,5.81],pay:[240,96]}}
+const META={
+'アイムジャグラーEX（6号機）':{q:'A',grw:.65,note:'REG中心。ぶどうは設定1〜5ほぼ同等・設定6優遇のため、6判別の補助として使用。REGの単独/重複分解は必須にしない。'},
+'ネオアイムジャグラーEX':{q:'A',grw:.65,note:'ガリぞう氏の逆算値を採用。REG中心、ぶどうは設定6判別の補助。単独REGと重複REGは比率がほぼ一定のため合算REGも重視。'},
+'マイジャグラーV':{q:'A',grw:.85,note:'REGとぶどうの2本柱。特に単独REGを強く評価し、非同時チェリーも補助反映。'},
+'ファンキージャグラー2':{q:'A-',grw:.80,note:'ガリぞう調べの設定別ぶどう逆算値を採用。設定看破難度が高いため、REG・ぶどう・BIGを総合しつつ極端な断定を抑制。'},
+'ゴーゴージャグラー3':{q:'A',grw:.95,note:'REGとぶどうの2本柱。シリーズ内でもぶどうへの意識を高め、単独REG・重複REGも詳細判定。'},
+'ハッピージャグラーV III':{q:'A',grw:.90,note:'REGとぶどうを主軸。設定3以下と4以上でぶどう差が大きく、チェリー重複REGにも大きな設定差があるため詳細判定。'},
+'ジャグラーガールズSS':{q:'B+',grw:.55,note:'REG中心。ぶどうは設定5・6のみ優遇だが差が小さいため補助評価に限定。ボーナス詳細未算出部分は無理に推定しない。'},
+'ミスタージャグラー':{q:'A',grw:.90,note:'REGとぶどうの2本柱。ゴージャグ3に近く、ぶどうをやや強めに評価。'},
+'ウルトラミラクルジャグラー':{q:'B+',grw:.55,note:'REGを主軸に、ガリぞう氏シミュレートのぶどう・非同時チェリーを補助。設定差の小さい小役は過信しない。'}
+};
+
+const DETAIL={
+'マイジャグラーV':{srb:[655.36,601.25,492.75,407.06,390.10,327.68],crb:[1092.27,1074.36,1057.03,1008.25,862.32,762.05],ch:[38.10,38.10,36.82,35.62,35.62,35.62],dw:{srb:1.15,crb:.55,ch:.35}},
+'ゴーゴージャグラー3':{srb:[468.1,445.8,412.2,356.2,327.7,313.6],crb:[1456.4,1310.7,1191.6,1092.3,1008.2,936.2],dw:{srb:.75,crb:.40}},
+'ハッピージャグラーV III':{srb:[636.3,569.9,532.8,478.4,436.9,425.6],crb:[1057.0,993.0,885.6,809.1,728.2,642.5],dw:{srb:.70,crb:.80}},
+'ネオアイムジャグラーEX':{srb:[630.2,574.9,474.9,448.9,364.1,364.1],crb:[1456.4,1310.7,1092.3,1057.0,851.1,851.1],dw:{srb:.45,crb:.25}},
+'ウルトラミラクルジャグラー':{ch:[37.22,37.22,37.22,37.09,36.16,35.48],dw:{ch:.22}}
+};
+const BACKTEST={
+'アイムジャグラーEX（6号機）':'設定6・10万G集計: BIG 1/270.99 / REG 1/257.25 / 合算 1/132.06。さらに30万Gスランプデータあり。',
+'マイジャグラーV':'設定6・10万G集計: BIG 1/214.71 / REG 1/241.10 / 合算 1/112.71。さらに30万Gスランプデータあり。',
+'ファンキージャグラー2':'設定6・10万G集計: BIG 1/227.14 / REG 1/293.19 / 合算 1/126.35。さらに30万Gスランプデータあり。'
+};
+const EMP6={
+'ネオアイムジャグラーEX':'設定6実戦: 3000G / ぶどう515回 = 1/5.83',
+'ファンキージャグラー2':'設定6実戦: 5488G / ぶどう1/5.49 / 単独REG1/365.9 / 重複REG1/1097.6',
+'ゴーゴージャグラー3':'設定6実戦: 3000G / ぶどう471回 = 1/6.5',
+'ミスタージャグラー':'設定6実戦: 約3000G / ぶどう487回 = 1/5.7',
+'アイムジャグラーEX（6号機）':'アプリ実戦: 各設定100万G / ぶどう 設定1 1/6.03 → 設定6 1/5.79'
+};
+const CALIB={
+'ネオアイムジャグラーEX':{level:'A',basis:'ガリぞう内部数値＋REG詳細＋ぶどう逆算',use:'REG主軸／ぶどうは設定6判別補助'},
+'アイムジャグラーEX（6号機）':{level:'A',basis:'メーカー公表値＋大規模アプリ/実戦データ',use:'REG主軸／BIGは弱め／ぶどうは6判別補助'},
+'マイジャグラーV':{level:'A+',basis:'ガリぞう内部数値＋単独/重複REG＋ぶどう＋大量実戦',use:'単独REG・REG・ぶどうを強く評価'},
+'ファンキージャグラー2':{level:'A',basis:'公表値＋ぶどうシミュレート＋設定6実戦＋大量実戦',use:'REG・ぶどう・BIGを総合、断定は抑制'},
+'ゴーゴージャグラー3':{level:'A+',basis:'ガリぞう単独/重複REG＋ぶどう',use:'ぶどうをやや強め、REGを併用'},
+'ハッピージャグラーV III':{level:'A+',basis:'ガリぞう単独/重複REG＋ぶどう＋各設定大規模実戦情報',use:'REG・ぶどう、特に4以上のぶどう差と重複REG'},
+'ジャグラーガールズSS':{level:'B+',basis:'公表REG＋ガリぞうぶどう＋設定6実戦',use:'REG主軸／ぶどうは5・6補助'},
+'ミスタージャグラー':{level:'A',basis:'公表値＋ガリぞうREG/ぶどう＋設定6実戦',use:'REG＋ぶどう。ぶどうをやや強め'},
+'ウルトラミラクルジャグラー':{level:'A-',basis:'ガリぞう内部数値＋ぶどう＋非同時チェリー＋設定6実戦',use:'REG主軸／ぶどう・非同時チェリーは補助'}
+};
+const RATE={
+'ネオアイムジャグラーEX':[97.0,98.0,99.5,101.1,103.3,105.5],
+'アイムジャグラーEX（6号機）':[97.0,98.0,99.5,101.1,103.3,105.5],
+'マイジャグラーV':[97.0,98.0,99.9,102.8,105.3,109.4],
+'ファンキージャグラー2':[97.0,98.5,99.8,102.0,104.3,109.0],
+'ゴーゴージャグラー3':[97.2,98.2,99.4,101.6,103.8,106.5],
+'ハッピージャグラーV III':[97.0,98.1,99.9,102.9,105.8,108.4],
+'ジャグラーガールズSS':[97.0,97.9,99.9,102.1,104.0,107.5],
+'ミスタージャグラー':[97.0,98.0,99.8,102.7,105.5,107.3],
+'ウルトラミラクルジャグラー':[97.0,98.1,99.8,102.1,104.5,108.1]};
+function showSpec(){const name=sel.value,m=M[name],r=RATE[name]||[];document.getElementById('specTitle').textContent=name;let rows=m.b.map((x,i)=>{const comb=1/(1/x[0]+1/x[1]);const gr=m.gr?'1/'+m.gr[i].toFixed(2):'—';return `<tr><td><b>${i+1}</b></td><td>1/${x[0]}</td><td>1/${x[1]}</td><td>1/${comb.toFixed(1)}</td><td>${gr}</td><td>${r[i]!=null?r[i].toFixed(1)+'%':'—'}</td></tr>`}).join('');document.getElementById('specBody').innerHTML=`<table style="width:100%;border-collapse:collapse;min-width:620px;text-align:center"><thead><tr style="color:#ffd84d"><th>設定</th><th>BIG</th><th>REG</th><th>合算</th><th>ぶどう</th><th>出玉率</th></tr></thead><tbody>${rows}</tbody></table><div class="muted" style="margin-top:12px">— は、現在このツールで設定判別用の確定値として採用していない項目です。BIG・REG・出玉率は機種公表値を優先。ぶどうは解析・大量実戦値を採用している機種のみ表示します。<br><br><b>判別データ品質 ${META[name]?.q||'C'}</b>：${META[name]?.note||''}${EMP6[name]?'<br>'+EMP6[name]:''}${BACKTEST[name]?'<br><b>大量実戦検証</b>：'+BACKTEST[name]:''}</div>`;document.querySelectorAll('#specBody td,#specBody th').forEach(e=>{e.style.padding='10px 8px';e.style.borderBottom='1px solid #2b3544'});document.getElementById('specModal').classList.remove('hidden')}function hideSpec(){document.getElementById('specModal').classList.add('hidden')}
+const sel=document.getElementById('model');Object.keys(M).forEach(x=>sel.add(new Option(x,x)));sel.value='マイジャグラーV';
+function G(x){return document.getElementById(x).value}function ll(n,k,p){if(k<0||k>n)return-1e99;return k*Math.log(p)+(n-k)*Math.log(1-p)}
+function reverseGrape(g,bb,rb,diff,pay,style){const rp=1/7.298*3;let cp,bp,pp;if(style==='random'){cp=1/51.99*2;bp=1/4608*14;pp=1/10186*10}else if(style==='full'){cp=1/34.66*2;bp=1/1024*14;pp=1/1024*10}else{cp=1/34.66*2;bp=0;pp=0}const other=g*(rp+cp+bp+pp);const need=diff+g*3-bb*pay[0]-rb*pay[1]-other;const cnt=need/8;return cnt>0?{cnt,p:g/cnt}:null}
+function nearest(arr,val){if(!arr||!val||!isFinite(val))return null;let bi=0,bd=1e99;arr.forEach((x,i)=>{const d=Math.abs(x-val);if(d<bd){bd=d;bi=i}});return bi+1}
+function factorLine(label,obs,arr,weight){if(!obs||!arr)return'';const n=nearest(arr,obs);let tone=n>=5?'good':n>=4?'warn':'';return `<div style="display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid #263244;padding:7px 0"><span>${label}</span><span class="${tone}">1/${obs.toFixed(2)} → 設定${n}付近 <span class="muted">重み${weight.toFixed(2)}</span></span></div>`}
+function calc(){const g=+G('g'),bb=+G('bb'),rb=+G('rb'),d=+G('diff'),gr=+G('grape')||0,cbb=+G('cbb')||0,crb=+G('crb')||0,sbb=G('sbb')===''?Math.max(0,bb-cbb):+G('sbb'),srb=G('srb')===''?Math.max(0,rb-crb):+G('srb');if(!g||bb+rb>g)return alert('入力値を確認してください');if(crb>rb||cbb>bb)return alert('重複ボーナス回数が総ボーナス回数を超えています');const m=M[sel.value],rev=reverseGrape(g,bb,rb,d,m.pay,G('style'));const meta=META[sel.value]||{q:'C',grw:0,note:''};const cal=CALIB[sel.value]||{level:meta.q,basis:'',use:''};let L=m.b.map((x,i)=>0.48*ll(g,bb,1/x[0])+1.00*ll(g,rb,1/x[1]));
+const det=DETAIL[sel.value];const hasCRB=G('crb')!=='';const hasSRB=G('srb')!==''||hasCRB;
+if(det&&det.srb&&hasSRB){L=L.map((v,i)=>v-1.00*ll(g,rb,1/m.b[i][1])+(det.dw.srb||0)*ll(g,srb,1/det.srb[i])+(hasCRB?(det.dw.crb||0)*ll(g,crb,1/det.crb[i]):0));}
+const ch=+G('cherry')||0;if(det?.ch&&ch>0&&(hasCRB||G('cbb')!=='')){const non=Math.max(0,ch-cbb-crb);L=L.map((v,i)=>v+(det.dw.ch||0)*ll(g,non,1/det.ch[i]));}
+let grapeSignal='なし',grapeWeight=0,grapeCnt=0,gp=null;
+if(gr>0&&m.gr){grapeCnt=gr;gp=g/gr;grapeWeight=meta.grw;grapeSignal='実測';L=L.map((v,i)=>v+grapeWeight*ll(g,grapeCnt,1/m.gr[i]));}
+else if(rev&&m.gr){grapeCnt=rev.cnt;gp=rev.p;grapeWeight=meta.grw*.28;grapeSignal='差枚逆算（弱い補助）';L=L.map((v,i)=>v+grapeWeight*ll(g,grapeCnt,1/m.gr[i]));}
+const temp=g<1500?2.8:g<3000?2.15:g<5000?1.65:g<7000?1.38:1.22;const mx=Math.max(...L),raw=L.map(x=>Math.exp((x-mx)/temp)),sum=raw.reduce((a,b)=>a+b,0),w=raw.map(x=>x/sum*100),best=w.indexOf(Math.max(...w))+1;const conf=g>=7000?'高':g>=4000?'中〜高':g>=2500?'中':'低';const rows=w.map((p,i)=>`<div class="row"><b>設定${i+1}</b><div class="bar"><div class="fill" style="width:${p}%"></div></div><span class="pct">${p.toFixed(1)}%</span></div>`).join('');const br=x=>x&&isFinite(x)?`1/${x.toFixed(1)}`:'—';
+let factors='';if(bb)factors+=factorLine('BIG',g/bb,m.b.map(x=>x[0]),.48);if(rb&&!hasSRB)factors+=factorLine('REG',g/rb,m.b.map(x=>x[1]),1.00);if(det?.srb&&hasSRB&&srb)factors+=factorLine('単独REG',g/srb,det.srb,det.dw.srb||0);if(det?.crb&&hasCRB&&crb)factors+=factorLine('チェリー重複REG',g/crb,det.crb,det.dw.crb||0);if(gp&&m.gr)factors+=factorLine(`ぶどう（${grapeSignal}）`,gp,m.gr,grapeWeight);if(det?.ch&&ch>0&&(hasCRB||G('cbb')!=='')){const non=Math.max(0,ch-cbb-crb);if(non)factors+=factorLine('非同時チェリー',g/non,det.ch,det.dw.ch||0);}
+document.getElementById('out').innerHTML=`<div class="card"><div class="muted">総合判定 / 信頼度 ${conf} / データ品質 ${cal.level}</div><div class="big">設定${best} が最有力</div>${rows}<div class="muted">※同一事前確率での相対尤度。ホールの設定配分は含みません。</div></div><div class="kpis"><div class="kpi"><span class="muted">BIG</span><b>${br(g/bb)}</b></div><div class="kpi"><span class="muted">REG</span><b>${br(g/rb)}</b></div><div class="kpi"><span class="muted">合算</span><b>${br(g/(bb+rb))}</b></div><div class="kpi"><span class="muted">ぶどう</span><b>${gp?'1/'+gp.toFixed(2):'—'}</b></div></div><div class="card"><b>判定根拠</b>${factors||'<div class="muted" style="margin-top:8px">入力されたBIG/REGを中心に判定しています。</div>'}<div class="muted" style="margin-top:10px">${cal.use}<br>根拠データ：${cal.basis}</div></div><div class="card"><b>高設定側の相対期待度</b><p>設定4以上 <strong>${(w[3]+w[4]+w[5]).toFixed(1)}%</strong>　／　設定5以上 <strong>${(w[4]+w[5]).toFixed(1)}%</strong>　／　設定6 <strong>${w[5].toFixed(1)}%</strong></p><div class="muted">ぶどう：${grapeSignal}${rev&&!gr?`（逆算 1/${rev.p.toFixed(2)}、判定ウェイトを実測の28%に制限）`:''}<br>内訳：単独BIG ${sbb} / 単独REG ${srb} / チェリー重複BIG ${cbb} / チェリー重複REG ${crb}<br><b>データ品質 ${meta.q}</b>：${meta.note}${EMP6[sel.value]?'<br>'+EMP6[sel.value]:''}${BACKTEST[sel.value]?'<br><b>大量実戦検証</b>：'+BACKTEST[sel.value]:''}<br>短時間の上振れ・下振れを考慮し、ゲーム数が少ないほど尤度を平滑化しています。差枚逆算ぶどうは実測ぶどうより不確実なため、弱い補助材料としてのみ使用します。</div></div>`;save()}
+const C=['ぶどう','チェリー','RB','BB','チェリー重複RB','チェリー重複BB'];let cv=JSON.parse(localStorage.getItem('jugCounter')||'{}');C.forEach(x=>cv[x]??=0);function drawC(){document.getElementById('counters').innerHTML=C.map(x=>`<div class="counter"><div class="muted">${x}</div><div class="num">${cv[x]}</div><button onclick="inc('${x}')">＋1</button><button class="secondary" onclick="dec('${x}')">−1</button></div>`).join('')}function inc(x){cv[x]++;storeC()}function dec(x){cv[x]=Math.max(0,cv[x]-1);storeC()}function storeC(){localStorage.setItem('jugCounter',JSON.stringify(cv));drawC()}function resetCounters(){if(confirm('カウンターを0に戻しますか？')){C.forEach(x=>cv[x]=0);storeC()}}function applyCounters(){document.getElementById('grape').value=cv['ぶどう'];document.getElementById('cherry').value=cv['チェリー'];document.getElementById('bb').value=cv['BB'];document.getElementById('rb').value=cv['RB'];document.getElementById('crb').value=cv['チェリー重複RB'];document.getElementById('cbb').value=cv['チェリー重複BB'];document.getElementById('srb').value=Math.max(0,cv['RB']-cv['チェリー重複RB']);document.getElementById('sbb').value=Math.max(0,cv['BB']-cv['チェリー重複BB']);tab('an');calc()}function tab(x){document.getElementById('an').classList.toggle('hidden',x!=='an');document.getElementById('ct').classList.toggle('hidden',x!=='ct')}function save(){['model','g','bb','rb','diff','grape','cherry','crb','cbb','srb','sbb','style'].forEach(id=>localStorage.setItem('jug_'+id,G(id)))}function load(){['model','g','bb','rb','diff','grape','cherry','crb','cbb','srb','sbb','style'].forEach(id=>{let v=localStorage.getItem('jug_'+id);if(v!==null&&document.getElementById(id))document.getElementById(id).value=v})}drawC();load();calc();
+</script><script>
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+}
+</script>
+</body></html>
