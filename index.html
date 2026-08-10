@@ -178,6 +178,19 @@ nav,footer{background:#080a0d!important}
 .g-quick-row button{min-height:30px!important;padding:4px 2px!important;font-size:11px!important;border-radius:7px!important;background:#1c2229!important;border:1px solid #4f5a66!important;white-space:nowrap!important}
 </style>
 
+
+<style>
+.g-quick-row{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:5px!important;margin-top:7px!important}
+.g-quick-row button{
+ display:block!important;width:100%!important;min-width:0!important;min-height:34px!important;
+ padding:5px 1px!important;border-radius:7px!important;border:1px solid #77818c!important;
+ background:linear-gradient(#303841,#1c2229)!important;color:#f3f5f7!important;
+ font-size:11px!important;font-weight:700!important;line-height:1!important;
+ box-shadow:inset 0 1px 0 #ffffff18,0 1px 2px #0008!important;
+}
+.g-quick-row button:active{transform:translateY(1px)!important;background:#11161b!important;filter:brightness(1.35)!important}
+</style>
+
 </head><body><div class="wrap">
 <h1>JUGGLER SETTING ANALYZER</h1><div class="sub">全機種校正版 / 機種別尤度 × 詳細REG × 実測ぶどう × 差枚逆算（弱補助）</div>
 <div class="tabs"><button onclick="tab('an')">設定推測</button><button class="secondary" onclick="tab('ct')">実戦カウンター</button><button class="secondary" onclick="tab('th')">展開分析</button><button class="secondary" onclick="showSpec()">📊 スペック</button></div>
@@ -196,7 +209,7 @@ nav,footer{background:#080a0d!important}
 <div class="card"><div class="muted">実戦カウンター ＋ 展開分析</div><div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:7px">
 <img src="icon-192.png" alt="" style="width:52px;height:52px;border-radius:12px;border:1px solid #747b83;box-shadow:0 3px 12px #000">
 <div class="big" style="font-size:22px">JUGGLER ANALYZER</div></div>
-<div class="muted" style="font-weight:800;letter-spacing:.08em">LIVE COUNTER × 展開分析 <span style="font-size:10px;color:#7f8994">v20</span></div><div class="muted">ここだけ操作すれば、通常カウントと展開分析へ同時に記録します。</div></div>
+<div class="muted" style="font-weight:800;letter-spacing:.08em">LIVE COUNTER × 展開分析 <span style="font-size:10px;color:#7f8994">v20.1</span></div><div class="muted">ここだけ操作すれば、通常カウントと展開分析へ同時に記録します。</div></div>
 <div class="card"><div class="grid">
 <div><label>開始時 総ゲーム数</label><input id="liveStartG" type="number" min="0" value="0"></div>
 <div><label>現在 総ゲーム数</label><input id="liveG" type="number" min="0" value="0"><button type="button" class="mini-g-sync" onclick="syncCurrentG()">台のG数に補正</button><div class="g-quick-row"><button type="button" onclick="advanceBlankG(5)">＋5G</button><button type="button" onclick="advanceBlankG(10)">＋10G</button><button type="button" onclick="advanceBlankG(15)">＋15G</button><button type="button" onclick="advanceBlankG(20)">＋20G</button><button type="button" onclick="advanceBlankG(25)">＋25G</button></div></div>
@@ -631,6 +644,19 @@ function applyLiveDelta(type){
  e.value=(Number(e.value)||0)+liveNetDelta(type);
  const m=document.getElementById('liveMax');
  if(m && Number(e.value)>Number(m.value||0))m.value=Number(e.value);
+}
+function advanceBlankG(n){
+ const g=document.getElementById('liveG');
+ const d=document.getElementById('liveDiff');
+ if(!g||!d)return;
+ const step=Number(n)||0;
+ if(step<=0)return;
+ g.value=(Number(g.value)||0)+step;
+ d.value=(Number(d.value)||0)-(step*3);
+ pushLiveHistory({type:'ADV',advanceG:step,diffDelta:-(step*3),ts:Date.now()});
+ persistAll();
+ try{drawLiveSignal();drawTheory()}catch(e){console.error(e)}
+ playCountTone('plus');
 }
 function syncCurrentG(){
  const e=document.getElementById('liveG');if(!e)return;
