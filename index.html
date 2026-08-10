@@ -50,6 +50,11 @@ nav,footer{background:#080a0d!important}
 #ct .counter.bb,#ct .counter.cbb{border-color:#e04a3e!important}#ct .counter.bb button,#ct .counter.cbb button{background:#a83229!important;border-color:#ef6256!important}
 #ct .counter.rb,#ct .counter.crb{border-color:#2e9cdd!important}#ct .counter.rb button,#ct .counter.crb button{background:#176b9f!important;border-color:#48b5f4!important}
 </style>
+
+<style id="undo-v8">
+#ct .counter.undo{border-color:#626a74!important;background:linear-gradient(180deg,#171b20,#090b0e)!important}
+#ct .counter.undo button{background:linear-gradient(180deg,#4a515a,#24282e)!important;border-color:#7c858f!important;color:#fff!important}
+</style>
 </head><body><div class="wrap">
 <h1>JUGGLER SETTING ANALYZER</h1><div class="sub">全機種校正版 / 機種別尤度 × 詳細REG × 実測ぶどう × 差枚逆算（弱補助）</div>
 <div class="tabs"><button onclick="tab('an')">設定推測</button><button class="secondary" onclick="tab('ct')">実戦カウンター</button><button class="secondary" onclick="tab('th')">展開分析</button><button class="secondary" onclick="showSpec()">📊 スペック</button></div>
@@ -73,7 +78,7 @@ nav,footer{background:#080a0d!important}
 <div class="counter rb"><div>RB</div><div class="num" id="nRB">0</div><button onclick="bonusLive('RB')">＋1</button></div>
 <div class="counter cbb"><div>🍒＋BB</div><div class="num" id="nCBB">0</div><button onclick="chBonusLive('B')">＋1</button></div>
 <div class="counter crb"><div>🍒＋RB</div><div class="num" id="nCRB">0</div><button onclick="chBonusLive('RB')">＋1</button></div>
-<div class="counter"><div>その他</div><div class="muted">1G進める</div><button class="secondary" onclick="live('X')">＋1G</button></div>
+<div class="counter undo"><div>↶ 直前取消</div><div class="muted">最後の入力を1件戻す</div><button class="secondary" onclick="undoLastLive()">−1 / 戻す</button></div>
 </div></div>
 <div id="liveSignal"></div>
 <div class="card"><div class="flex"><button onclick="applyCounters()">設定推測へ反映</button><button class="secondary" onclick="tab('th')">展開分析の詳細</button><button class="danger" onclick="resetLive()">実戦データ初期化</button></div></div>
@@ -264,7 +269,7 @@ function drawTheory(){
  ['tg','tdiff','tmax'].forEach(id=>localStorage.setItem('jugTheory_'+id,document.getElementById(id).value))
 }
 function undoTheory(){if(!TH.events.length)return;TH.events.pop();document.getElementById('tg').value=Math.max(0,tval('tg')-1);tstore();drawTheory()}
-function resetTheory(){if(confirm('展開分析のイベント・サイン・検証成績をすべて初期化しますか？')){TH={events:[],signals:[],bonuses:[]};['tg','tdiff','tmax'].forEach(id=>document.getElementById(id).value=0);tstore();drawTheory()}}
+function resetTheory(){if(confirm('展開分析のイベント・サイン・検証成績をすべて初期化しますか？')){TH={events:[],signals:[],bonuses:[]};LIVE_HISTORY=[];saveLiveHistory();['tg','tdiff','tmax'].forEach(id=>document.getElementById(id).value=0);tstore();drawTheory()}}
 function loadTheory(){['tg','tdiff','tmax'].forEach(id=>{let v=localStorage.getItem('jugTheory_'+id);if(v!==null)document.getElementById(id).value=v});['tdiff','tmax'].forEach(id=>document.getElementById(id).addEventListener('change',()=>{drawTheory();tstore()}));drawTheory()}
 
 function syncLiveNums(){
@@ -272,6 +277,45 @@ function syncLiveNums(){
  Object.entries(m).forEach(([id,k])=>{let e=document.getElementById(id);if(e)e.textContent=cv[k]||0});
  let r=document.getElementById('nReplay');if(r)r.textContent=TH.events.filter(e=>e.type==='R').length;
 }
+
+let LIVE_HISTORY=[];
+function pushLiveHistory(item){
+ LIVE_HISTORY.push(item);
+ try{localStorage.setItem('jugLiveHistory',JSON.stringify(LIVE_HISTORY.slice(-500)))}catch(e){}
+}
+function saveLiveHistory(){try{localStorage.setItem('jugLiveHistory',JSON.stringify(LIVE_HISTORY.slice(-500)))}catch(e){}}
+function updateVisibleCounts(){
+ const map={nGrape:'ぶどう',nCherry:'チェリー',nBB:'BB',nRB:'RB',nCBB:'チェリー重複BB',nCRB:'チェリー重複RB'};
+ Object.entries(map).forEach(([id,k])=>{const e=document.getElementById(id);if(e)e.textContent=String(Number(cv[k])||0)});
+ const r=document.getElementById('nReplay');if(r)r.textContent=String(TH.events.filter(e=>e.type==='R').length);
+}
+function undoLastLive(){
+ const h=LIVE_HISTORY.pop();
+ if(!h){return;}
+ const gEl=document.getElementById('liveG');
+ if(gEl)gEl.value=Math.max(0,(Number(gEl.value)||0)-(h.advanceG?1:0));
+ if(h.type==='G')cv['ぶどう']=Math.max(0,(Number(cv['ぶどう'])||0)-1);
+ if(h.type==='C')cv['チェリー']=Math.max(0,(Number(cv['チェリー'])||0)-1);
+ if(h.type==='B')cv['BB']=Math.max(0,(Number(cv['BB'])||0)-1);
+ if(h.type==='RB')cv['RB']=Math.max(0,(Number(cv['RB'])||0)-1);
+ if(h.type==='CBB'){
+   cv['チェリー']=Math.max(0,(Number(cv['チェリー'])||0)-1);
+   cv['BB']=Math.max(0,(Number(cv['BB'])||0)-1);
+   cv['チェリー重複BB']=Math.max(0,(Number(cv['チェリー重複BB'])||0)-1);
+ }
+ if(h.type==='CRB'){
+   cv['チェリー']=Math.max(0,(Number(cv['チェリー'])||0)-1);
+   cv['RB']=Math.max(0,(Number(cv['RB'])||0)-1);
+   cv['チェリー重複RB']=Math.max(0,(Number(cv['チェリー重複RB'])||0)-1);
+ }
+ if(h.eventTs)TH.events=TH.events.filter(e=>e.ts!==h.eventTs);
+ if(h.bonusTs)TH.bonuses=TH.bonuses.filter(e=>e.ts!==h.bonusTs);
+ saveLiveHistory();
+ try{localStorage.setItem('jugCounter',JSON.stringify(cv));tstore()}catch(e){}
+ updateVisibleCounts();
+ try{drawLiveSignal();drawTheory()}catch(e){}
+}
+
 function live(type){
  const gEl=document.getElementById('liveG');
  const g=(Number(gEl&&gEl.value)||0)+1;
@@ -290,9 +334,11 @@ function live(type){
    if(e)e.textContent=String((Number(e.textContent)||0)+1);
  }
 
+ const eventTs=Date.now();
+ pushLiveHistory({type,advanceG:true,eventTs});
  // Visible count is already updated above. Analysis errors must never stop the counter.
  try{
-   TH.events.push({g,type,diff:Number(document.getElementById('liveDiff')?.value)||0,max:Number(document.getElementById('liveMax')?.value)||0,ts:Date.now()});
+   TH.events.push({g,type,diff:Number(document.getElementById('liveDiff')?.value)||0,max:Number(document.getElementById('liveMax')?.value)||0,ts:eventTs});
    const tg=document.getElementById('tg'),td=document.getElementById('tdiff'),tm=document.getElementById('tmax');
    if(tg)tg.value=g;if(td)td.value=document.getElementById('liveDiff')?.value||0;if(tm)tm.value=document.getElementById('liveMax')?.value||0;
    autoSignal(); tstore();
@@ -306,7 +352,8 @@ function bonusLive(t){
  cv[key]=(Number(cv[key])||0)+1;
  const e=document.getElementById(id);if(e)e.textContent=String(cv[key]);
  const g=Number(document.getElementById('liveG')?.value)||0;
- try{TH.bonuses.push({g,type:t,ts:Date.now()});settleLive(g);tstore()}catch(err){console.error(err)}
+ const bonusTs=Date.now();pushLiveHistory({type:key,advanceG:false,bonusTs});
+ try{TH.bonuses.push({g,type:t,ts:bonusTs});settleLive(g);tstore()}catch(err){console.error(err)}
  try{localStorage.setItem('jugCounter',JSON.stringify(cv))}catch(err){}
  try{drawLiveSignal()}catch(err){}
 }
@@ -318,7 +365,8 @@ function chBonusLive(t){
  cv[ckey]=(Number(cv[ckey])||0)+1;
  [['nCherry','チェリー'],[bid,bkey],[cid,ckey]].forEach(([id,k])=>{const e=document.getElementById(id);if(e)e.textContent=String(cv[k])});
  const g=Number(document.getElementById('liveG')?.value)||0;
- try{TH.bonuses.push({g,type:t,ts:Date.now()});settleLive(g);tstore()}catch(err){}
+ const bonusTs=Date.now();pushLiveHistory({type:key,advanceG:false,bonusTs});
+ try{TH.bonuses.push({g,type:t,ts:bonusTs});settleLive(g);tstore()}catch(err){}
  try{localStorage.setItem('jugCounter',JSON.stringify(cv))}catch(err){}
  try{drawLiveSignal()}catch(err){}
 }
@@ -328,8 +376,8 @@ function drawLiveSignal(){
  let a=scoreTheory(),level=a.score>=75?'強':a.score>=45?'中':a.score>=25?'弱':'通常',cl=level==='強'?'strong':level==='中'?'mid':'';
  box.innerHTML=`<div class="card signal ${cl}"><div class="muted">展開サイン</div><div class="phase">${level}${level==='通常'?'':' '+a.score+'/100'}</div><div>${a.reasons.map(x=>`<span class="pill">${x}</span>`).join('')}</div><div class="muted">一致度であり、ボーナス当選確率ではありません。</div></div>`
 }
-function resetLive(){if(confirm('カウンターと展開分析を初期化しますか？')){C.forEach(x=>cv[x]=0);TH={events:[],signals:[],bonuses:[]};['liveG','liveDiff','liveMax','tg','tdiff','tmax'].forEach(id=>document.getElementById(id).value=0);storeC();tstore();syncLiveNums();drawLiveSignal();drawTheory()}}
-function loadLive(){document.getElementById('liveG').value=localStorage.getItem('jugTheory_tg')||0;document.getElementById('liveDiff').value=localStorage.getItem('jugTheory_tdiff')||0;document.getElementById('liveMax').value=localStorage.getItem('jugTheory_tmax')||0;['liveDiff','liveMax'].forEach(id=>document.getElementById(id).addEventListener('change',()=>{document.getElementById(id==='liveDiff'?'tdiff':'tmax').value=document.getElementById(id).value;drawLiveSignal()}));syncLiveNums();drawLiveSignal()}
+function resetLive(){if(confirm('カウンターと展開分析を初期化しますか？')){C.forEach(x=>cv[x]=0);TH={events:[],signals:[],bonuses:[]};LIVE_HISTORY=[];saveLiveHistory();['liveG','liveDiff','liveMax','tg','tdiff','tmax'].forEach(id=>document.getElementById(id).value=0);storeC();tstore();syncLiveNums();drawLiveSignal();drawTheory()}}
+function loadLive(){try{LIVE_HISTORY=JSON.parse(localStorage.getItem('jugLiveHistory')||'[]')}catch(e){LIVE_HISTORY=[]};document.getElementById('liveG').value=localStorage.getItem('jugTheory_tg')||0;document.getElementById('liveDiff').value=localStorage.getItem('jugTheory_tdiff')||0;document.getElementById('liveMax').value=localStorage.getItem('jugTheory_tmax')||0;['liveDiff','liveMax'].forEach(id=>document.getElementById(id).addEventListener('change',()=>{document.getElementById(id==='liveDiff'?'tdiff':'tmax').value=document.getElementById(id).value;drawLiveSignal()}));syncLiveNums();drawLiveSignal()}
 
 drawC();load();loadTheory();loadLive();calc();
 </script></body></html>
