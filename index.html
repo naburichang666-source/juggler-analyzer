@@ -143,6 +143,30 @@ nav,footer{background:#080a0d!important}
 }
 </style>
 
+
+<style>
+/* v14: count feedback */
+.feedback-controls{display:flex;justify-content:flex-end;margin:0 0 8px}
+.sound-toggle{width:auto!important;min-height:38px!important;padding:7px 12px!important;font-size:13px!important;background:#262b31!important;border:1px solid #69717a!important}
+.sound-toggle.off{opacity:.62!important}
+#ct .counter.count-flash{
+  animation:countFlash .22s ease-out!important;
+}
+#ct .counter.undo-flash{
+  animation:undoFlash .25s ease-out!important;
+}
+@keyframes countFlash{
+  0%{filter:brightness(1);transform:scale(1)}
+  35%{filter:brightness(1.9);transform:scale(.975);box-shadow:0 0 22px currentColor}
+  100%{filter:brightness(1);transform:scale(1)}
+}
+@keyframes undoFlash{
+  0%{filter:brightness(1)}
+  35%{filter:brightness(1.7);box-shadow:0 0 20px #fff8}
+  100%{filter:brightness(1)}
+}
+</style>
+
 </head><body><div class="wrap">
 <h1>JUGGLER SETTING ANALYZER</h1><div class="sub">全機種校正版 / 機種別尤度 × 詳細REG × 実測ぶどう × 差枚逆算（弱補助）</div>
 <div class="tabs"><button onclick="tab('an')">設定推測</button><button class="secondary" onclick="tab('ct')">実戦カウンター</button><button class="secondary" onclick="tab('th')">展開分析</button><button class="secondary" onclick="showSpec()">📊 スペック</button></div>
@@ -161,8 +185,11 @@ nav,footer{background:#080a0d!important}
 <div class="card"><div class="muted">実戦カウンター ＋ 展開分析</div><div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:7px">
 <img src="icon-192.png" alt="" style="width:52px;height:52px;border-radius:12px;border:1px solid #747b83;box-shadow:0 3px 12px #000">
 <div class="big" style="font-size:22px">JUGGLER ANALYZER</div></div>
-<div class="muted" style="font-weight:800;letter-spacing:.08em">LIVE COUNTER × 展開分析 <span style="font-size:10px;color:#7f8994">v13</span></div><div class="muted">ここだけ操作すれば、通常カウントと展開分析へ同時に記録します。</div></div>
+<div class="muted" style="font-weight:800;letter-spacing:.08em">LIVE COUNTER × 展開分析 <span style="font-size:10px;color:#7f8994">v14</span></div><div class="muted">ここだけ操作すれば、通常カウントと展開分析へ同時に記録します。</div></div>
 <div class="card"><div class="grid"><div><label>現在G数</label><input id="liveG" type="number" value="0"></div><div><label>現在差枚</label><input id="liveDiff" type="number" value="0"></div><div><label>本日最高差枚</label><input id="liveMax" type="number" value="0"></div></div><div class="muted" style="margin-top:8px">G数を台の表示に合わせてから小役を押せます。連続小役を正確に見る時は、そのまま連続タップしてください。</div></div>
+<div class="feedback-controls">
+<button type="button" id="soundToggle" class="sound-toggle" onclick="toggleCountSound()">🔊 カウント音 ON</button>
+</div>
 <div class="card live-counter-card">
 <div class="countgrid live-grid">
   <div class="counter grape"><div>🍇 ぶどう</div><div class="num editable-count" id="nGrape" role="button" tabindex="0" title="タップして直接入力" onclick="editLiveCount('G')">0</div><button type="button" onclick="live('G')">＋1</button></div>
@@ -413,6 +440,50 @@ function recalcSignalResults(){
  });
 }
 
+
+let COUNT_SOUND_ON = localStorage.getItem('jugCountSound')!=='off';
+let COUNT_AUDIO_CTX=null;
+function updateSoundToggle(){
+ const b=document.getElementById('soundToggle');if(!b)return;
+ b.textContent=COUNT_SOUND_ON?'🔊 カウント音 ON':'🔇 カウント音 OFF';
+ b.classList.toggle('off',!COUNT_SOUND_ON);
+}
+function toggleCountSound(){
+ COUNT_SOUND_ON=!COUNT_SOUND_ON;
+ try{localStorage.setItem('jugCountSound',COUNT_SOUND_ON?'on':'off')}catch(e){}
+ updateSoundToggle();
+ if(COUNT_SOUND_ON)playCountTone('toggle');
+}
+function playCountTone(kind='plus'){
+ if(!COUNT_SOUND_ON)return;
+ try{
+   const AC=window.AudioContext||window.webkitAudioContext;
+   if(!AC)return;
+   if(!COUNT_AUDIO_CTX)COUNT_AUDIO_CTX=new AC();
+   const ctx=COUNT_AUDIO_CTX;
+   if(ctx.state==='suspended')ctx.resume();
+   const o=ctx.createOscillator(),g=ctx.createGain();
+   o.connect(g);g.connect(ctx.destination);
+   const now=ctx.currentTime;
+   if(kind==='undo'){o.frequency.setValueAtTime(210,now);o.frequency.exponentialRampToValueAtTime(135,now+.055)}
+   else if(kind==='toggle'){o.frequency.setValueAtTime(520,now);o.frequency.exponentialRampToValueAtTime(650,now+.04)}
+   else{o.frequency.setValueAtTime(430,now);o.frequency.exponentialRampToValueAtTime(330,now+.045)}
+   o.type='triangle';
+   g.gain.setValueAtTime(.0001,now);g.gain.exponentialRampToValueAtTime(.12,now+.006);g.gain.exponentialRampToValueAtTime(.0001,now+.07);
+   o.start(now);o.stop(now+.075);
+ }catch(e){}
+}
+function flashCounter(type,undo=false){
+ const ids={G:'nGrape',R:'nReplay',C:'nCherry',BB:'nBB',RB:'nRB',CBB:'nCBB',CRB:'nCRB',H:'nMiss',X:'nOther'};
+ const el=document.getElementById(ids[type]);const card=el?.closest('.counter');if(!card)return;
+ const cls=undo?'undo-flash':'count-flash';card.classList.remove(cls);void card.offsetWidth;card.classList.add(cls);
+ setTimeout(()=>card.classList.remove(cls),300);
+}
+function countFeedback(type,undo=false){
+ flashCounter(type,undo);
+ playCountTone(undo?'undo':'plus');
+}
+
 function editLiveCount(type){
  const labels={G:'ぶどう',R:'リプレイ',C:'チェリー',BB:'BB',RB:'RB',CBB:'チェリー＋BB',CRB:'チェリー＋RB',H:'ハズレ',X:'その他'};
  const current={
@@ -451,7 +522,7 @@ function editLiveCount(type){
 
  // 直接編集後は「直前取消」の履歴と実データが一致しなくなるため履歴をクリア。
  LIVE_HISTORY=[];saveLiveHistory();
- recalcSignalResults();updateVisibleCounts();persistAll();
+ recalcSignalResults();updateVisibleCounts();persistAll();countFeedback(type,false);
  try{drawLiveSignal();drawTheory()}catch(e){console.error(e)}
 }
 
@@ -468,7 +539,7 @@ function undoLastLive(){
  if(h.eventTs)TH.events=TH.events.filter(e=>e.ts!==h.eventTs);
  if(h.bonusTs)TH.bonuses=TH.bonuses.filter(e=>e.ts!==h.bonusTs);
  if(Number.isInteger(h.signalCountBefore))TH.signals=TH.signals.slice(0,h.signalCountBefore);
- recalcSignalResults(); updateVisibleCounts(); persistAll();
+ recalcSignalResults(); updateVisibleCounts(); persistAll(); countFeedback(h.type,true);
  try{drawLiveSignal();drawTheory()}catch(e){console.error(e)}
 }
 function live(type){
@@ -479,7 +550,7 @@ function live(type){
  TH.events.push({g,type,diff:Number(document.getElementById('liveDiff')?.value)||0,max:Number(document.getElementById('liveMax')?.value)||0,ts:eventTs});
  try{syncLiveToTheory();autoSignal()}catch(e){console.error(e)}
  pushLiveHistory({type,advanceG:true,eventTs,signalCountBefore});
- updateVisibleCounts();persistAll();
+ updateVisibleCounts();persistAll();countFeedback(type,false);
  try{drawLiveSignal()}catch(e){}
 }
 function settleLive(){recalcSignalResults()}
@@ -487,14 +558,14 @@ function bonusLive(t){
  const key=t==='B'?'BB':'RB';cv[key]=(Number(cv[key])||0)+1;
  const g=Number(document.getElementById('liveG')?.value)||0,bonusTs=Date.now();
  TH.bonuses.push({g,type:t,ts:bonusTs});pushLiveHistory({type:key,advanceG:false,bonusTs});
- settleLive();updateVisibleCounts();persistAll();try{drawLiveSignal()}catch(e){}
+ settleLive();updateVisibleCounts();persistAll();countFeedback(key,false);try{drawLiveSignal()}catch(e){}
 }
 function chBonusLive(t){
  const bkey=t==='B'?'BB':'RB',ckey=t==='B'?'チェリー重複BB':'チェリー重複RB',hist=t==='B'?'CBB':'CRB';
  cv['チェリー']=(Number(cv['チェリー'])||0)+1;cv[bkey]=(Number(cv[bkey])||0)+1;cv[ckey]=(Number(cv[ckey])||0)+1;
  const g=Number(document.getElementById('liveG')?.value)||0,bonusTs=Date.now();
  TH.bonuses.push({g,type:t,ts:bonusTs});pushLiveHistory({type:hist,advanceG:false,bonusTs});
- settleLive();updateVisibleCounts();persistAll();try{drawLiveSignal()}catch(e){}
+ settleLive();updateVisibleCounts();persistAll();countFeedback(hist,false);try{drawLiveSignal()}catch(e){}
 }
 function drawLiveSignal(){
  const box=document.getElementById('liveSignal');if(!box)return;syncLiveToTheory();
@@ -520,6 +591,7 @@ function startApp(){
  // 初回起動時はHTMLの空欄/0をそのまま使用。
  // 2回目以降はlocalStorageから前回状態を復元する。
  drawC();
+ updateSoundToggle();
  load();
  loadTheory();
  loadLive();
