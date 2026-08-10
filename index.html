@@ -98,40 +98,43 @@ nav,footer{background:#080a0d!important}
  #ct .counter button{font-size:16px!important;padding:10px 4px!important}
 }
 </style>
+
+
+
+
+
+
 <style>
-/* v12.2: 設定推測バーの「設定1〜6」を縦にきれいに整列 */
-.probRow{
+/* v12.4: 実DOM(.row)に対する設定番号整列修正 */
+.setting-prob-row{
   display:grid !important;
-  grid-template-columns:72px minmax(0,1fr) 96px !important;
+  grid-template-columns:76px minmax(0,1fr) 64px !important;
   align-items:center !important;
-  column-gap:10px !important;
+  gap:8px !important;
 }
-.probRow > b:first-child{
-  display:block !important;
-  width:72px !important;
-  min-width:72px !important;
+.setting-prob-row .setting-label{
+  display:grid !important;
+  grid-template-columns:52px 24px !important;
+  width:76px !important;
+  min-width:76px !important;
+  margin:0 !important;
+  padding:0 !important;
+  white-space:nowrap !important;
+}
+.setting-prob-row .setting-label > span:first-child{
   text-align:left !important;
-  white-space:nowrap !important;
-  font-variant-numeric:tabular-nums;
 }
-.probRow > span:last-child{
-  min-width:96px !important;
+.setting-prob-row .setting-no{
+  display:block !important;
+  width:24px !important;
+  text-align:center !important;
+  font-variant-numeric:tabular-nums !important;
+}
+.setting-prob-row .pct{
+  width:64px !important;
+  min-width:64px !important;
   text-align:right !important;
-  white-space:nowrap !important;
-  font-variant-numeric:tabular-nums;
-}
-@media (max-width:430px){
-  .probRow{
-    grid-template-columns:64px minmax(0,1fr) 82px !important;
-    column-gap:8px !important;
-  }
-  .probRow > b:first-child{
-    width:64px !important;
-    min-width:64px !important;
-  }
-  .probRow > span:last-child{
-    min-width:82px !important;
-  }
+  font-variant-numeric:tabular-nums !important;
 }
 </style>
 
@@ -148,7 +151,7 @@ nav,footer{background:#080a0d!important}
 <div class="card"><div class="muted">実戦カウンター ＋ 展開分析</div><div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:7px">
 <img src="icon-192.png" alt="" style="width:52px;height:52px;border-radius:12px;border:1px solid #747b83;box-shadow:0 3px 12px #000">
 <div class="big" style="font-size:22px">JUGGLER ANALYZER</div></div>
-<div class="muted" style="font-weight:800;letter-spacing:.08em">LIVE COUNTER × 展開分析 <span style="font-size:10px;color:#7f8994">v12.2</span></div><div class="muted">ここだけ操作すれば、通常カウントと展開分析へ同時に記録します。</div></div>
+<div class="muted" style="font-weight:800;letter-spacing:.08em">LIVE COUNTER × 展開分析 <span style="font-size:10px;color:#7f8994">v12.4</span></div><div class="muted">ここだけ操作すれば、通常カウントと展開分析へ同時に記録します。</div></div>
 <div class="card"><div class="grid"><div><label>現在G数</label><input id="liveG" type="number" value="0"></div><div><label>現在差枚</label><input id="liveDiff" type="number" value="0"></div><div><label>本日最高差枚</label><input id="liveMax" type="number" value="0"></div></div><div class="muted" style="margin-top:8px">G数を台の表示に合わせてから小役を押せます。連続小役を正確に見る時は、そのまま連続タップしてください。</div></div>
 <div class="card live-counter-card">
 <div class="countgrid live-grid">
@@ -285,7 +288,7 @@ const ch=+G('cherry')||0;if(det?.ch&&ch>0&&(hasCRB||G('cbb')!=='')){const non=Ma
 let grapeSignal='なし',grapeWeight=0,grapeCnt=0,gp=null;
 if(gr>0&&m.gr){grapeCnt=gr;gp=g/gr;grapeWeight=meta.grw;grapeSignal='実測';L=L.map((v,i)=>v+grapeWeight*ll(g,grapeCnt,1/m.gr[i]));}
 else if(rev&&m.gr){grapeCnt=rev.cnt;gp=rev.p;grapeWeight=meta.grw*.28;grapeSignal='差枚逆算（弱い補助）';L=L.map((v,i)=>v+grapeWeight*ll(g,grapeCnt,1/m.gr[i]));}
-const temp=g<1500?2.8:g<3000?2.15:g<5000?1.65:g<7000?1.38:1.22;const mx=Math.max(...L),raw=L.map(x=>Math.exp((x-mx)/temp)),sum=raw.reduce((a,b)=>a+b,0),w=raw.map(x=>x/sum*100),best=w.indexOf(Math.max(...w))+1;const conf=g>=7000?'高':g>=4000?'中〜高':g>=2500?'中':'低';const rows=w.map((p,i)=>`<div class="row"><b>設定${i+1}</b><div class="bar"><div class="fill" style="width:${p}%"></div></div><span class="pct">${p.toFixed(1)}%</span></div>`).join('');const br=x=>x&&isFinite(x)?`1/${x.toFixed(1)}`:'—';
+const temp=g<1500?2.8:g<3000?2.15:g<5000?1.65:g<7000?1.38:1.22;const mx=Math.max(...L),raw=L.map(x=>Math.exp((x-mx)/temp)),sum=raw.reduce((a,b)=>a+b,0),w=raw.map(x=>x/sum*100),best=w.indexOf(Math.max(...w))+1;const conf=g>=7000?'高':g>=4000?'中〜高':g>=2500?'中':'低';const rows=w.map((p,i)=>`<div class="row setting-prob-row"><b class="setting-label"><span>設定</span><span class="setting-no">${i+1}</span></b><div class="bar"><div class="fill" style="width:${p}%"></div></div><span class="pct">${p.toFixed(1)}%</span></div>`).join('');const br=x=>x&&isFinite(x)?`1/${x.toFixed(1)}`:'—';
 let factors='';if(bb)factors+=factorLine('BIG',g/bb,m.b.map(x=>x[0]),.48);if(rb&&!hasSRB)factors+=factorLine('REG',g/rb,m.b.map(x=>x[1]),1.00);if(det?.srb&&hasSRB&&srb)factors+=factorLine('単独REG',g/srb,det.srb,det.dw.srb||0);if(det?.crb&&hasCRB&&crb)factors+=factorLine('チェリー重複REG',g/crb,det.crb,det.dw.crb||0);if(gp&&m.gr)factors+=factorLine(`ぶどう（${grapeSignal}）`,gp,m.gr,grapeWeight);if(det?.ch&&ch>0&&(hasCRB||G('cbb')!=='')){const non=Math.max(0,ch-cbb-crb);if(non)factors+=factorLine('非同時チェリー',g/non,det.ch,det.dw.ch||0);}
 document.getElementById('out').innerHTML=`<div class="card"><div class="muted">総合判定 / 信頼度 ${conf} / データ品質 ${cal.level}</div><div class="big">設定${best} が最有力</div>${rows}<div class="muted">※同一事前確率での相対尤度。ホールの設定配分は含みません。</div></div><div class="kpis"><div class="kpi"><span class="muted">BIG</span><b>${br(g/bb)}</b></div><div class="kpi"><span class="muted">REG</span><b>${br(g/rb)}</b></div><div class="kpi"><span class="muted">合算</span><b>${br(g/(bb+rb))}</b></div><div class="kpi"><span class="muted">ぶどう</span><b>${gp?'1/'+gp.toFixed(2):'—'}</b></div></div><div class="card"><b>判定根拠</b>${factors||'<div class="muted" style="margin-top:8px">入力されたBIG/REGを中心に判定しています。</div>'}<div class="muted" style="margin-top:10px">${cal.use}<br>根拠データ：${cal.basis}</div></div><div class="card"><b>高設定側の相対期待度</b><p>設定4以上 <strong>${(w[3]+w[4]+w[5]).toFixed(1)}%</strong>　／　設定5以上 <strong>${(w[4]+w[5]).toFixed(1)}%</strong>　／　設定6 <strong>${w[5].toFixed(1)}%</strong></p><div class="muted">ぶどう：${grapeSignal}${rev&&!gr?`（逆算 1/${rev.p.toFixed(2)}、判定ウェイトを実測の28%に制限）`:''}<br>内訳：単独BIG ${sbb} / 単独REG ${srb} / チェリー重複BIG ${cbb} / チェリー重複REG ${crb}<br><b>データ品質 ${meta.q}</b>：${meta.note}${EMP6[sel.value]?'<br>'+EMP6[sel.value]:''}${BACKTEST[sel.value]?'<br><b>大量実戦検証</b>：'+BACKTEST[sel.value]:''}<br>短時間の上振れ・下振れを考慮し、ゲーム数が少ないほど尤度を平滑化しています。差枚逆算ぶどうは実測ぶどうより不確実なため、弱い補助材料としてのみ使用します。</div></div>`;save()}
 const C=['ぶどう','チェリー','RB','BB','チェリー重複RB','チェリー重複BB'];let cv=JSON.parse(localStorage.getItem('jugCounter')||'{}');C.forEach(x=>cv[x]??=0);function drawC(){const el=document.getElementById('counters');if(!el)return;el.innerHTML=C.map(x=>`<div class="counter"><div class="muted">${x}</div><div class="num">${cv[x]}</div><button onclick="inc('${x}')">＋1</button><button class="secondary" onclick="dec('${x}')">−1</button></div>`).join('')}function inc(x){cv[x]++;storeC()}function dec(x){cv[x]=Math.max(0,cv[x]-1);storeC()}function storeC(){localStorage.setItem('jugCounter',JSON.stringify(cv));drawC()}function resetCounters(){if(confirm('カウンターを0に戻しますか？')){C.forEach(x=>cv[x]=0);storeC()}}function applyCounters(){document.getElementById('g').value=document.getElementById('liveG').value;document.getElementById('diff').value=document.getElementById('liveDiff').value;document.getElementById('grape').value=cv['ぶどう'];document.getElementById('cherry').value=cv['チェリー'];document.getElementById('bb').value=cv['BB'];document.getElementById('rb').value=cv['RB'];document.getElementById('crb').value=cv['チェリー重複RB'];document.getElementById('cbb').value=cv['チェリー重複BB'];document.getElementById('srb').value=Math.max(0,cv['RB']-cv['チェリー重複RB']);document.getElementById('sbb').value=Math.max(0,cv['BB']-cv['チェリー重複BB']);tab('an');calc()}
