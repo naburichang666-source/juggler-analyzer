@@ -191,39 +191,10 @@ nav,footer{background:#080a0d!important}
 .g-quick-row button:active{transform:translateY(1px)!important;background:#11161b!important;filter:brightness(1.35)!important}
 </style>
 
-
 <style>
-/* v20.2: iPhone quick-G button overflow fix */
-.g-quick-row{
-  display:grid!important;
-  grid-template-columns:repeat(5,minmax(0,1fr))!important;
-  gap:4px!important;
-  width:100%!important;
-  box-sizing:border-box!important;
-  overflow:hidden!important;
-}
-.g-quick-row button{
-  width:100%!important;
-  min-width:0!important;
-  max-width:100%!important;
-  box-sizing:border-box!important;
-  padding:5px 0!important;
-  font-size:10px!important;
-  letter-spacing:-0.35px!important;
-  white-space:nowrap!important;
-  overflow:hidden!important;
-  text-overflow:clip!important;
-}
-@media (max-width:390px){
-  .g-quick-row{gap:3px!important}
-  .g-quick-row button{
-    font-size:9.5px!important;
-    letter-spacing:-0.55px!important;
-  }
-}
-</style>
-
-</head><body><div class="wrap">
+.live-history-controls{display:flex;justify-content:flex-end;margin:0 0 7px}.history-open-btn{width:auto!important;min-height:36px!important;padding:7px 11px!important;font-size:12px!important}
+.history-modal{display:none;position:fixed;inset:0;z-index:9999;background:#000b;align-items:flex-end}.history-modal.show{display:flex}.history-sheet{width:100%;max-height:78vh;background:#101419;border-radius:18px 18px 0 0;overflow:hidden}.history-head{display:flex;justify-content:space-between;align-items:center;padding:14px;border-bottom:1px solid #303944}.history-head button{width:auto!important}.history-list{max-height:68vh;overflow:auto;padding:10px 12px 25px}.history-chain{padding:11px 10px;margin-bottom:8px;border:1px solid #303944;border-radius:11px;background:#171c22}.history-chain-top{display:flex;justify-content:space-between;gap:8px}.history-seq{font-size:16px;line-height:1.5}.history-judge{flex:none;border-radius:999px;padding:4px 8px;font-size:12px;font-weight:800}.history-judge.strong{color:#ff7070;background:#481d1d}.history-judge.mid{color:#ffd35a;background:#3d3214}.history-judge.weak{color:#77d7ff;background:#15313e}.history-judge.none{color:#9da6af;background:#242a30}.history-meta,.history-reason{margin-top:5px;color:#8f99a4;font-size:11px}.history-break{text-align:center;color:#8f99a4;padding:5px 0 10px}.history-empty{text-align:center;color:#8f99a4;padding:30px}
+</style><style>.history-bonus{padding:11px 10px;margin-bottom:8px;border:1px solid #8b6b2d;border-radius:11px;background:#282012;color:#f3d47a}.history-bonus b{color:#fff}</style></head><body><div class="wrap">
 <h1>JUGGLER SETTING ANALYZER</h1><div class="sub">全機種校正版 / 機種別尤度 × 詳細REG × 実測ぶどう × 差枚逆算（弱補助）</div>
 <div class="tabs"><button onclick="tab('an')">設定推測</button><button class="secondary" onclick="tab('ct')">実戦カウンター</button><button class="secondary" onclick="tab('th')">展開分析</button><button class="secondary" onclick="showSpec()">📊 スペック</button></div>
 <section id="an"><div class="card"><div class="grid">
@@ -241,14 +212,14 @@ nav,footer{background:#080a0d!important}
 <div class="card"><div class="muted">実戦カウンター ＋ 展開分析</div><div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:7px">
 <img src="icon-192.png" alt="" style="width:52px;height:52px;border-radius:12px;border:1px solid #747b83;box-shadow:0 3px 12px #000">
 <div class="big" style="font-size:22px">JUGGLER ANALYZER</div></div>
-<div class="muted" style="font-weight:800;letter-spacing:.08em">LIVE COUNTER × 展開分析 <span style="font-size:10px;color:#7f8994">v20.2</span></div><div class="muted">ここだけ操作すれば、通常カウントと展開分析へ同時に記録します。</div></div>
+<div class="muted" style="font-weight:800;letter-spacing:.08em">LIVE COUNTER × 展開分析 <span style="font-size:10px;color:#7f8994">v22</span></div><div class="muted">ここだけ操作すれば、通常カウントと展開分析へ同時に記録します。</div></div>
 <div class="card"><div class="grid">
 <div><label>開始時 総ゲーム数</label><input id="liveStartG" type="number" min="0" value="0"></div>
 <div><label>現在 総ゲーム数</label><input id="liveG" type="number" min="0" value="0"><button type="button" class="mini-g-sync" onclick="syncCurrentG()">台のG数に補正</button><div class="g-quick-row"><button type="button" onclick="advanceBlankG(5)">＋5G</button><button type="button" onclick="advanceBlankG(10)">＋10G</button><button type="button" onclick="advanceBlankG(15)">＋15G</button><button type="button" onclick="advanceBlankG(20)">＋20G</button><button type="button" onclick="advanceBlankG(25)">＋25G</button></div></div>
 <div><label>推定差枚</label><input id="liveDiff" type="number" value="0"></div>
 <div><label>本日最高差枚</label><input id="liveMax" type="number" value="0"></div>
 </div><div class="muted" style="margin-top:8px">開始時の台データ総Gを一度入力してください。以後は小役・ハズレ・その他を押すたび現在総Gを自動加算し、推定差枚も役に応じて更新します。</div></div>
-<div class="muted" style="margin:4px 2px 9px;line-height:1.5">※ハズレは毎G押さず、小役連が途切れた最初の1回だけ押します。連続ハズレ中は追加操作不要です。</div><div class="feedback-controls">
+<div class="muted" style="margin:4px 2px 9px;line-height:1.5">※ハズレは毎G押さず、小役連が途切れた最初の1回だけ押します。連続ハズレ中は追加操作不要です。</div><div class="live-history-controls"><button type="button" class="history-open-btn" onclick="openLiveHistory()">📜 小役履歴・判定を見る</button></div><div class="feedback-controls">
 <button type="button" id="soundToggle" class="sound-toggle" onclick="toggleCountSound()">🔊 カウント音 ON</button>
 </div>
 <div class="card live-counter-card">
@@ -490,6 +461,32 @@ function scoreTheory(){
  if(pat==='GGGGRGGG'){score+=35;reasons.push('ぶどう4連→リプレイ→ぶどう3連')}
  return {score:Math.min(100,score),reasons,gl,rl,mixed,bank,peakBank,drop,d}
 }
+
+function theoryLevelFromScore(n){return n>=75?'強':n>=45?'中':n>=25?'弱':'なし'}
+function scoreAtEventIndex(idx){
+ const all=TH.events,old=document.getElementById('tg')?.value;
+ try{TH.events=all.slice(0,idx+1);const e=TH.events[TH.events.length-1];if(e&&document.getElementById('tg'))document.getElementById('tg').value=e.g;const a=scoreTheory();return {level:theoryLevelFromScore(a.score),score:a.score,reasons:a.reasons||[],bank:a.bank||0}}
+ finally{TH.events=all;if(document.getElementById('tg')&&old!==undefined)document.getElementById('tg').value=old}
+}
+function renderHistoryChain(chain,snap){
+ const icon=t=>t==='G'?'🍇':t==='R'?'🔵':t==='C'?'🍒':t;
+ const seq=chain.map(e=>icon(e.type)).join(' → '),a=chain[0],b=chain[chain.length-1],range=a.g===b.g?`${b.g}G`:`${a.g}〜${b.g}G`;
+ const cls=snap.level==='強'?'strong':snap.level==='中'?'mid':snap.level==='弱'?'weak':'none';
+ return `<div class="history-chain"><div class="history-chain-top"><span class="history-seq">${seq}</span><span class="history-judge ${cls}">${snap.level}${snap.level==='なし'?'':' '+snap.score}</span></div><div class="history-meta">${range}　小役余力 ${snap.bank>0?'+':''}${snap.bank}枚</div><div class="history-reason">${snap.reasons.slice(0,3).join(' / ')||'目立つ集中なし'}</div></div>`;
+}
+function openLiveHistory(){
+ const m=document.getElementById('liveHistoryModal'),l=document.getElementById('liveHistoryList');if(!m||!l)return;
+ if(!TH.events.length)l.innerHTML='<div class="history-empty">まだ小役履歴がありません。</div>';
+ else{let rows=[],chain=[];TH.events.forEach((e,i)=>{if(e.type==='H'){if(chain.length){rows.push(renderHistoryChain(chain,scoreAtEventIndex(i-1)));chain=[]}rows.push('<div class="history-break">💥 ハズレ区切り</div>')}else if(['G','R','C'].includes(e.type))chain.push(e)});if(chain.length)rows.push(renderHistoryChain(chain,scoreAtEventIndex(TH.events.length-1)));
+   TH.bonuses.forEach(b=>{
+     const name=b.type==='B'?'🔴 BB':'🔵 RB',x=b.link;
+     if(x)rows.push(`<div class="history-bonus"><b>${name}　${b.g}G当選</b><div>${x.level} ${x.score} → ${x.gamesToBonus}G後に当選</div><div class="history-reason">${(x.reasons||[]).slice(0,3).join(' / ')}</div></div>`);
+     else rows.push(`<div class="history-bonus"><b>${name}　${b.g}G当選</b><div class="history-reason">直前の弱・中・強判定なし</div></div>`);
+   });
+   l.innerHTML=rows.reverse().join('')}
+ m.classList.add('show');
+}
+function closeLiveHistory(){document.getElementById('liveHistoryModal')?.classList.remove('show')}
 function autoSignal(){
  const a=scoreTheory();let level=a.score>=75?'強':a.score>=45?'中':a.score>=25?'弱':'なし';
  if(level==='なし')return;
@@ -728,17 +725,41 @@ function live(type){
  try{drawLiveSignal()}catch(e){}
 }
 function settleLive(){recalcSignalResults()}
+
+function latestTheoryLinkForBonus(bonusG){
+ let best=null;
+ for(let i=TH.events.length-1;i>=0;i--){
+   const e=TH.events[i];
+   if(!['G','R','C'].includes(e.type))continue;
+   const snap=scoreAtEventIndex(i);
+   if(snap.level!=='なし'){
+     best={eventIndex:i,signalG:Number(e.g)||0,level:snap.level,score:snap.score,bank:snap.bank,reasons:snap.reasons||[]};
+     break;
+   }
+ }
+ if(!best)return null;
+ best.gamesToBonus=Math.max(0,(Number(bonusG)||0)-best.signalG);
+ const from=Math.max(0,best.eventIndex-7),seq=TH.events.slice(from,best.eventIndex+1).filter(e=>['G','R','C','H'].includes(e.type)).map(e=>e.type);
+ best.sequence=seq;
+ return best;
+}
+function recordBonusLink(type,g,bonusTs){
+ const link=latestTheoryLinkForBonus(g);
+ const b=TH.bonuses.find(x=>x.ts===bonusTs);
+ if(b)b.link=link;
+ return link;
+}
 function bonusLive(t){
  const key=t==='B'?'BB':'RB';cv[key]=(Number(cv[key])||0)+1;
  const g=Number(document.getElementById('liveG')?.value)||0,bonusTs=Date.now();
- TH.bonuses.push({g,type:t,ts:bonusTs});pushLiveHistory({type:key,advanceG:false,bonusTs});
+ TH.bonuses.push({g,type:t,ts:bonusTs});recordBonusLink(t,g,bonusTs);pushLiveHistory({type:key,advanceG:false,bonusTs});
  settleLive();updateVisibleCounts();persistAll();countFeedback(key,false);try{drawLiveSignal()}catch(e){}
 }
 function chBonusLive(t){
  const bkey=t==='B'?'BB':'RB',ckey=t==='B'?'チェリー重複BB':'チェリー重複RB',hist=t==='B'?'CBB':'CRB';
  cv['チェリー']=(Number(cv['チェリー'])||0)+1;cv[bkey]=(Number(cv[bkey])||0)+1;cv[ckey]=(Number(cv[ckey])||0)+1;
  const g=Number(document.getElementById('liveG')?.value)||0,bonusTs=Date.now();
- TH.bonuses.push({g,type:t,ts:bonusTs});pushLiveHistory({type:hist,advanceG:false,bonusTs});
+ TH.bonuses.push({g,type:t,ts:bonusTs});recordBonusLink(t,g,bonusTs);pushLiveHistory({type:hist,advanceG:false,bonusTs});
  settleLive();updateVisibleCounts();persistAll();countFeedback(hist,false);try{drawLiveSignal()}catch(e){}
 }
 function drawLiveSignal(){
@@ -784,4 +805,4 @@ function startApp(){
 }
 startApp();
 
-</script></body></html>
+</script><div id="liveHistoryModal" class="history-modal"><div class="history-sheet"><div class="history-head"><b>小役履歴・判定</b><button type="button" onclick="closeLiveHistory()">閉じる</button></div><div id="liveHistoryList" class="history-list"></div></div></div></body></html>
