@@ -55,7 +55,17 @@ nav,footer{background:#080a0d!important}
 #ct .counter.undo{border-color:#626a74!important;background:linear-gradient(180deg,#171b20,#090b0e)!important}
 #ct .counter.undo button{background:linear-gradient(180deg,#4a515a,#24282e)!important;border-color:#7c858f!important;color:#fff!important}
 </style>
-</head><body><div class="wrap">
+<style id="v9-live-colors">
+#ct .counter.grape{border:2px solid #9d43dc!important}#ct .counter.grape button{background:linear-gradient(#9a32cf,#5b167b)!important;border-color:#c85cff!important}
+#ct .counter.replay{border:2px solid #40c9ff!important}#ct .counter.replay button{background:linear-gradient(#25b8f2,#126e9c)!important;border-color:#6cdaff!important}
+#ct .counter.cherry{border:2px solid #ff4654!important}#ct .counter.cherry button{background:linear-gradient(#d93643,#861c26)!important;border-color:#ff6570!important}
+#ct .counter.bb{border:2px solid #ff704d!important}#ct .counter.bb button{background:linear-gradient(#dc4c32,#8b2418)!important;border-color:#ff8669!important}
+#ct .counter.rb{border:2px solid #398dff!important}#ct .counter.rb button{background:linear-gradient(#287ddd,#154a91)!important;border-color:#64a8ff!important}
+#ct .counter.cbb{border:2px solid #ff3f83!important}#ct .counter.cbb button{background:linear-gradient(#cf2868,#77143c)!important;border-color:#ff6da0!important}
+#ct .counter.crb{border:2px solid #3979e9!important}#ct .counter.crb button{background:linear-gradient(#315fc0,#172f72)!important;border-color:#6c98ff!important}
+#ct .counter.undo{border:2px solid #b9c0c9!important}#ct .counter.undo button{background:linear-gradient(#5e6670,#30353c)!important;border-color:#d4d9df!important}
+
+</style></head><body><div class="wrap">
 <h1>JUGGLER SETTING ANALYZER</h1><div class="sub">全機種校正版 / 機種別尤度 × 詳細REG × 実測ぶどう × 差枚逆算（弱補助）</div>
 <div class="tabs"><button onclick="tab('an')">設定推測</button><button class="secondary" onclick="tab('ct')">実戦カウンター</button><button class="secondary" onclick="tab('th')">展開分析</button><button class="secondary" onclick="showSpec()">📊 スペック</button></div>
 <section id="an"><div class="card"><div class="grid">
@@ -68,17 +78,17 @@ nav,footer{background:#080a0d!important}
 <div class="card"><div class="muted">実戦カウンター ＋ 展開分析</div><div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:7px">
 <img src="icon-192.png" alt="" style="width:52px;height:52px;border-radius:12px;border:1px solid #747b83;box-shadow:0 3px 12px #000">
 <div class="big" style="font-size:22px">JUGGLER ANALYZER</div></div>
-<div class="muted" style="font-weight:800;letter-spacing:.08em">LIVE COUNTER × 展開分析</div><div class="muted">ここだけ操作すれば、通常カウントと展開分析へ同時に記録します。</div></div>
+<div class="muted" style="font-weight:800;letter-spacing:.08em">LIVE COUNTER × 展開分析 <span style="font-size:10px;color:#7f8994">v10</span></div><div class="muted">ここだけ操作すれば、通常カウントと展開分析へ同時に記録します。</div></div>
 <div class="card"><div class="grid"><div><label>現在G数</label><input id="liveG" type="number" value="0"></div><div><label>現在差枚</label><input id="liveDiff" type="number" value="0"></div><div><label>本日最高差枚</label><input id="liveMax" type="number" value="0"></div></div><div class="muted" style="margin-top:8px">G数を台の表示に合わせてから小役を押せます。連続小役を正確に見る時は、そのまま連続タップしてください。</div></div>
 <div class="card"><div class="countgrid">
-<div class="counter grape"><div>🍇 ぶどう</div><div class="num" id="nGrape">0</div><button onclick="live('G')">＋1</button></div>
-<div class="counter replay"><div>↻ リプレイ</div><div class="num" id="nReplay">0</div><button onclick="live('R')">記録</button></div>
-<div class="counter cherry"><div>🍒 チェリー</div><div class="num" id="nCherry">0</div><button onclick="live('C')">＋1</button></div>
-<div class="counter bb"><div>BB</div><div class="num" id="nBB">0</div><button onclick="bonusLive('B')">＋1</button></div>
-<div class="counter rb"><div>RB</div><div class="num" id="nRB">0</div><button onclick="bonusLive('RB')">＋1</button></div>
-<div class="counter cbb"><div>🍒＋BB</div><div class="num" id="nCBB">0</div><button onclick="chBonusLive('B')">＋1</button></div>
-<div class="counter crb"><div>🍒＋RB</div><div class="num" id="nCRB">0</div><button onclick="chBonusLive('RB')">＋1</button></div>
-<div class="counter undo"><div>↶ 直前取消</div><div class="muted">最後の入力を1件戻す</div><button class="secondary" onclick="undoLastLive()">−1 / 戻す</button></div>
+<div class="counter grape"><div>🍇 ぶどう</div><div class="num" id="nGrape">0</div><button type="button" onclick="live('G')">＋1</button></div>
+<div class="counter replay"><div>↻ リプレイ</div><div class="num" id="nReplay">0</div><button type="button" onclick="live('R')">記録</button></div>
+<div class="counter cherry"><div>🍒 チェリー</div><div class="num" id="nCherry">0</div><button type="button" onclick="live('C')">＋1</button></div>
+<div class="counter bb"><div>BB</div><div class="num" id="nBB">0</div><button type="button" onclick="bonusLive('B')">＋1</button></div>
+<div class="counter rb"><div>RB</div><div class="num" id="nRB">0</div><button type="button" onclick="bonusLive('RB')">＋1</button></div>
+<div class="counter cbb"><div>🍒＋BB</div><div class="num" id="nCBB">0</div><button type="button" onclick="chBonusLive('B')">＋1</button></div>
+<div class="counter crb"><div>🍒＋RB</div><div class="num" id="nCRB">0</div><button type="button" onclick="chBonusLive('RB')">＋1</button></div>
+<div class="counter undo"><div>↶ 直近カウント取消</div><div class="muted">最後に押した1回を戻す</div><button type="button" onclick="undoLastLive()">−1 戻す</button></div>
 </div></div>
 <div id="liveSignal"></div>
 <div class="card"><div class="flex"><button onclick="applyCounters()">設定推測へ反映</button><button class="secondary" onclick="tab('th')">展開分析の詳細</button><button class="danger" onclick="resetLive()">実戦データ初期化</button></div></div>
