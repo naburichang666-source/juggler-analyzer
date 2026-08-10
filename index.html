@@ -185,7 +185,7 @@ nav,footer{background:#080a0d!important}
 <div class="card"><div class="muted">実戦カウンター ＋ 展開分析</div><div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:7px">
 <img src="icon-192.png" alt="" style="width:52px;height:52px;border-radius:12px;border:1px solid #747b83;box-shadow:0 3px 12px #000">
 <div class="big" style="font-size:22px">JUGGLER ANALYZER</div></div>
-<div class="muted" style="font-weight:800;letter-spacing:.08em">LIVE COUNTER × 展開分析 <span style="font-size:10px;color:#7f8994">v17</span></div><div class="muted">ここだけ操作すれば、通常カウントと展開分析へ同時に記録します。</div></div>
+<div class="muted" style="font-weight:800;letter-spacing:.08em">LIVE COUNTER × 展開分析 <span style="font-size:10px;color:#7f8994">v18</span></div><div class="muted">ここだけ操作すれば、通常カウントと展開分析へ同時に記録します。</div></div>
 <div class="card"><div class="grid">
 <div><label>開始時 総ゲーム数</label><input id="liveStartG" type="number" min="0" value="0"></div>
 <div><label>現在 総ゲーム数</label><input id="liveG" type="number" min="0" value="0"></div>
@@ -380,16 +380,34 @@ function densityScore(){
 function scoreTheory(){
  const gl=runLen('G'),rl=runLen('R'),d=densityScore(),drop=Math.max(0,tval('tmax')-tval('tdiff'));
  let score=0,reasons=[];
+
+ // 同一役の連続評価
  if(gl>=5){score+=55;reasons.push(`ぶどう${gl}連`)}else if(gl===4){score+=38;reasons.push('ぶどう4連')}else if(gl===3){score+=20;reasons.push('ぶどう3連')}else if(gl===2){score+=8;reasons.push('ぶどう2連')}
  if(rl>=4){score+=42;reasons.push(`リプレイ${rl}連`)}else if(rl===3){score+=20;reasons.push('リプレイ3連')}else if(rl===2){score+=8;reasons.push('リプレイ2連')}
- const r20=recent(20);let clusters=0;for(let i=1;i<r20.length;i++)if((r20[i].type==='G'||r20[i].type==='R')&&(r20[i-1].type==='G'||r20[i-1].type==='R'))clusters++;
+
+ // v18: ぶどうとリプレイを同じ「小役連」として評価。
+ // H(ハズレ区切り)が来るまでG/Rが続く限り、役が切り替わっても連続評価を落とさない。
+ let mixed=0;
+ for(let i=TH.events.length-1;i>=0;i--){
+   const t=TH.events[i].type;
+   if(t==='G'||t==='R'){mixed++;continue}
+   break;
+ }
+ if(mixed>=7){score+=48;reasons.push(`ぶどう・リプレイ小役${mixed}連`)}
+ else if(mixed>=5){score+=32;reasons.push(`ぶどう・リプレイ小役${mixed}連`)}
+ else if(mixed===4){score+=22;reasons.push('ぶどう・リプレイ小役4連')}
+ else if(mixed===3){score+=14;reasons.push('ぶどう・リプレイ小役3連')}
+ else if(mixed===2){score+=6;reasons.push('ぶどう・リプレイ小役2連')}
+
+ const r20=recent(20);let clusters=0;
+ for(let i=1;i<r20.length;i++)if((r20[i].type==='G'||r20[i].type==='R')&&(r20[i-1].type==='G'||r20[i-1].type==='R'))clusters++;
  if(clusters>=6){score+=18;reasons.push('直近20Gで小役連が頻発')}else if(clusters>=3){score+=9;reasons.push('小役2〜3連が複数')}
  if(d.jump>=.22){score+=18;reasons.push('小役密度が急上昇')}else if(d.jump>=.12){score+=9;reasons.push('小役密度が上昇')}
  if(drop>=1200){score+=18;reasons.push(`最高差枚から-${drop}枚`)}else if(drop>=700){score+=9;reasons.push(`最高差枚から-${drop}枚`)}
- // 特徴的な GGGG-R-GGG 近似
+
  const pat=recent(8).map(e=>e.type).join('');
  if(pat==='GGGGRGGG'){score+=35;reasons.push('ぶどう4連→リプレイ→ぶどう3連')}
- return {score:Math.min(100,score),reasons,gl,rl,drop,d}
+ return {score:Math.min(100,score),reasons,gl,rl,mixed,drop,d}
 }
 function autoSignal(){
  const a=scoreTheory();let level=a.score>=75?'強':a.score>=45?'中':a.score>=25?'弱':'なし';
