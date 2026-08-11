@@ -267,7 +267,7 @@ nav,footer{background:#080a0d!important}
 @media(max-width:430px){.tabs{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important}.tabs button{min-width:0!important;font-size:12px!important;padding-left:5px!important;padding-right:5px!important}}
 </style></head><body><div class="wrap">
 <h1>JUGGLER SETTING ANALYZER</h1><div class="sub">全機種校正版 / 機種別尤度 × 詳細REG × 実測ぶどう × 差枚逆算（弱補助）</div>
-<div class="tabs"><button onclick="tab('an')">設定推測</button><button class="secondary" onclick="tab('ct')">実戦カウンター</button><button class="secondary" onclick="tab('th')">展開分析</button><button class="secondary" onclick="showSpec()">📊 スペック</button><button class="secondary" onclick="tab('help')">？ ヘルプ</button></div>
+<div class="tabs"><button onclick="tab('an')">設定推測</button><button class="secondary" onclick="tab('ct')">実戦カウンター</button><button class="secondary" onclick="tab('th')">展開分析</button><button class="secondary" onclick="showSpec()">スペック</button><button class="secondary" onclick="tab('help')">ヘルプ</button></div>
 <section id="an"><div class="card"><div class="grid">
 <div><label>機種</label><select id="model"></select></div><div><label>開始時 総ゲーム数</label><input id="startG" type="number" min="0" value="" placeholder="座った時の総G"></div><div><label>現在 総ゲーム数</label><input id="g" type="number" min="0" value="" placeholder="現在の総G"></div><div><label>打ち方</label><select id="style"><option value="cherry">チェリー狙い</option><option value="random">適当打ち</option><option value="full">完全技術介入</option></select></div>
 <div><label>BIG</label><input id="bb" type="number" min="0" value=""></div><div><label>REG</label><input id="rb" type="number" min="0" value=""></div><div><label>差枚数</label><div class="signed-diff-wrap">
@@ -289,7 +289,7 @@ nav,footer{background:#080a0d!important}
 <div class="card"><div class="muted">実戦カウンター ＋ 展開分析</div><div class="analyzer-brand-row">
 <img src="icon-192.png" alt="" class="analyzer-brand-icon">
 <div class="analyzer-brand-title"><span>★</span> JUGGLER ANALYZER <span>★</span></div></div>
-<div class="muted" id="liveModelDisplay" style="margin-bottom:3px;color:#d6b15c;font-weight:700"></div><div class="muted" style="font-weight:800;letter-spacing:.08em">LIVE COUNTER × 展開分析 <span style="font-size:10px;color:#7f8994">v23.9</span></div><div class="muted">ここだけ操作すれば、通常カウントと展開分析へ同時に記録します。</div></div>
+<div class="muted" id="liveModelDisplay" style="margin-bottom:3px;color:#d6b15c;font-weight:700"></div><div class="muted" style="font-weight:800;letter-spacing:.08em">LIVE COUNTER × 展開分析 <span style="font-size:10px;color:#7f8994">v24.1</span></div><div class="muted">ここだけ操作すれば、通常カウントと展開分析へ同時に記録します。</div></div>
 <div class="card"><div class="grid">
 <div><label>開始時 総ゲーム数</label><input id="liveStartG" type="number" min="0" value="0"></div>
 <div><label>現在 総ゲーム数</label><input id="liveG" type="number" min="0" value="0"><button type="button" class="mini-g-sync" onclick="syncCurrentG()">台のG数に補正</button><div class="g-quick-row"><button type="button" onclick="advanceBlankG(5)">＋5G</button><button type="button" onclick="advanceBlankG(10)">＋10G</button><button type="button" onclick="advanceBlankG(15)">＋15G</button><button type="button" onclick="advanceBlankG(20)">＋20G</button><button type="button" onclick="advanceBlankG(25)">＋25G</button></div></div>
@@ -361,6 +361,7 @@ nav,footer{background:#080a0d!important}
 <section id="help" class="hidden help-page">
 <div class="card"><div class="muted">JUGGLER ANALYZER GUIDE</div><div class="big" style="font-size:22px">使い方・ルール・注意事項</div><div class="muted">設定推測・実戦カウンター・展開分析を正しく使うための説明です。</div></div>
 
+<div class="card"><b>入力値「0」の扱い</b><p><b>BIG・REGと総ゲーム数系を除く任意入力項目は、0を未入力として扱います。</b>設定推測ボタンを押した時点で0が入っている任意項目は空欄へ戻します。BIG・REGの0回、および開始時総G＝0は有効な値として残ります。</p></div>
 <div class="card"><b>① 設定推測の基本</b>
 <p>「開始時 総ゲーム数」には座った時点の台の総G、「現在 総ゲーム数」には判定時点の台の総Gを入力します。BIG・REGは現在の台データを入力してください。</p>
 <p>途中から打ち始めた場合でも、開始時総Gを入力すれば今回の実戦区間を区別できます。ただし、入力するボーナス等の数値と対象ゲーム区間は揃えてください。</p>
@@ -496,7 +497,12 @@ function G(x){return document.getElementById(x).value}function ll(n,k,p){if(k<0|
 function reverseGrape(g,bb,rb,diff,pay,style){const rp=1/7.298*3;let cp,bp,pp;if(style==='random'){cp=1/51.99*2;bp=1/4608*14;pp=1/10186*10}else if(style==='full'){cp=1/34.66*2;bp=1/1024*14;pp=1/1024*10}else{cp=1/34.66*2;bp=0;pp=0}const other=g*(rp+cp+bp+pp);const need=diff+g*3-bb*pay[0]-rb*pay[1]-other;const cnt=need/8;return cnt>0?{cnt,p:g/cnt}:null}
 function nearest(arr,val){if(!arr||!val||!isFinite(val))return null;let bi=0,bd=1e99;arr.forEach((x,i)=>{const d=Math.abs(x-val);if(d<bd){bd=d;bi=i}});return bi+1}
 function factorLine(label,obs,arr,weight){if(!obs||!arr)return'';const n=nearest(arr,obs);let tone=n>=5?'good':n>=4?'warn':'';return `<div style="display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid #263244;padding:7px 0"><span>${label}</span><span class="${tone}">1/${obs.toFixed(2)} → 設定${n}付近 <span class="muted">重み${weight.toFixed(2)}</span></span></div>`}
-function calc(){const totalG=+G('g'),startG=+G('startG')||0,g=totalG-startG,bb=+G('bb'),rb=+G('rb'),
+function calc(){
+['diffAbs','grape','cherry','crb','cbb','srb','sbb'].forEach(id=>{
+ const e=document.getElementById(id);
+ if(e && e.value.trim()!=='' && Number(e.value)===0)e.value='';
+});
+const totalG=+G('g'),startG=+G('startG')||0,g=totalG-startG,bb=+G('bb'),rb=+G('rb'),
 diffAbsRaw=(document.getElementById('diffAbs')?.value??'').trim(),diffSign=document.getElementById('diffSign')?.value||'+',
 hasDiff=diffAbsRaw!=='',
 d=hasDiff?(diffSign==='-'?-Math.abs(Number(diffAbsRaw)||0):Math.abs(Number(diffAbsRaw)||0)):0,
