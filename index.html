@@ -289,7 +289,7 @@ nav,footer{background:#080a0d!important}
 <div class="card"><div class="muted">実戦カウンター ＋ 展開分析</div><div class="analyzer-brand-row">
 <img src="icon-192.png" alt="" class="analyzer-brand-icon">
 <div class="analyzer-brand-title"><span>★</span> JUGGLER ANALYZER <span>★</span></div></div>
-<div class="muted" id="liveModelDisplay" style="margin-bottom:3px;color:#d6b15c;font-weight:700"></div><div class="muted" style="font-weight:800;letter-spacing:.08em">LIVE COUNTER × 展開分析 <span style="font-size:10px;color:#7f8994">v24.1</span></div><div class="muted">ここだけ操作すれば、通常カウントと展開分析へ同時に記録します。</div></div>
+<div class="muted" id="liveModelDisplay" style="margin-bottom:3px;color:#d6b15c;font-weight:700"></div><div class="muted" style="font-weight:800;letter-spacing:.08em">LIVE COUNTER × 展開分析 <span style="font-size:10px;color:#7f8994">v24.2</span></div><div class="muted">ここだけ操作すれば、通常カウントと展開分析へ同時に記録します。</div></div>
 <div class="card"><div class="grid">
 <div><label>開始時 総ゲーム数</label><input id="liveStartG" type="number" min="0" value="0"></div>
 <div><label>現在 総ゲーム数</label><input id="liveG" type="number" min="0" value="0"><button type="button" class="mini-g-sync" onclick="syncCurrentG()">台のG数に補正</button><div class="g-quick-row"><button type="button" onclick="advanceBlankG(5)">＋5G</button><button type="button" onclick="advanceBlankG(10)">＋10G</button><button type="button" onclick="advanceBlankG(15)">＋15G</button><button type="button" onclick="advanceBlankG(20)">＋20G</button><button type="button" onclick="advanceBlankG(25)">＋25G</button></div></div>
@@ -326,22 +326,7 @@ nav,footer{background:#080a0d!important}
   <div class="big" style="font-size:22px">展開分析</div>
   <div class="muted">設定推測とは完全に分離しています。「前兆」や「差枚調整」が実在すると断定せず、実戦履歴から再現性を検証するための機能です。</div>
 </div>
-<div class="card">
- <div class="grid">
-  <div><label>現在ゲーム数</label><input id="tg" type="number" min="0" value="0"></div>
-  <div><label>現在差枚</label><input id="tdiff" type="number" value="0"></div>
-  <div><label>本日最高枚数（データ機・任意）</label><input id="tmax" type="number" min="0" value="" placeholder="未入力可"></div>
- </div>
- <br><div class="theorygrid">
-  <button class="eventbtn" onclick="tevent('G')">🍇 ぶどう</button>
-  <button class="eventbtn secondary" onclick="tevent('R')">↻ リプレイ</button>
-  <button class="eventbtn secondary" onclick="tevent('C')">🍒 チェリー</button>
-  <button class="eventbtn secondary" onclick="tevent('X')">・ その他</button>
-  <button class="eventbtn" onclick="tbonus('B')">BB 当選</button>
-  <button class="eventbtn" onclick="tbonus('RB')">RB 当選</button>
- </div>
- <div class="tiny" style="margin-top:8px">小役ボタンは1タップ＝1G進行。何もないゲームは「その他」。毎ゲーム入力が大変なら、小役が集中した区間だけ記録しても使えますが、統計精度は下がります。</div>
-</div>
+<div class="card"><div class="muted">小役・ボーナスの入力は「実戦カウンター」に一本化しています。ここでは実戦カウンターから記録された履歴を分析します。</div></div>
 <div id="theorySignal"></div>
 <div class="card">
  <b>手動サイン記録</b><div class="muted">「今の流れは怪しい」と感じた瞬間を保存できます。自動判定とあなたの感覚を別々に検証します。</div>
@@ -394,7 +379,7 @@ nav,footer{background:#080a0d!important}
 </div>
 
 <div class="card"><b>⑥ 展開分析・独自理論</b>
-<p>展開分析は<b>設定推測とは別機能</b>です。小役の並びやサインと、その後のボーナス当選との関係を実戦履歴から検証するためのものです。</p>
+<p>展開分析は<b>設定推測とは別機能</b>です。小役・ボーナスの入力は実戦カウンターに一本化し、そこで記録された小役の並びやサインと、その後のボーナス当選との関係を実戦履歴から検証します。</p>
 <p>「弱・中・強」はボーナス当選確率や設定を保証する表示ではありません。理論検証成績では、サイン後10G / 20G / 30G / 40G / 50G / 100G以内の当選率を観測結果として集計します。</p>
 </div>
 
@@ -682,7 +667,20 @@ function drawTheory(){
  ['tg','tdiff','tmax'].forEach(id=>localStorage.setItem('jugTheory_'+id,document.getElementById(id).value))
 }
 function undoTheory(){if(!TH.events.length)return;TH.events.pop();document.getElementById('tg').value=Math.max(0,tval('tg')-1);tstore();drawTheory()}
-function resetTheory(){if(confirm('展開分析のイベント・サイン・検証成績をすべて初期化しますか？')){TH={events:[],signals:[],bonuses:[]};LIVE_HISTORY=[];saveLiveHistory();tstore();updateVisibleCounts();drawTheory();drawLiveSignal()}}
+function resetTheory(){if(confirm('展開分析のイベント・サイン・検証成績をすべて初期化しますか？\n※設定推測・実戦カウンターのデータは消えません。')){
+ TH={events:[],signals:[],bonuses:[]};
+ LIVE_HISTORY=[];
+ try{
+  localStorage.setItem('jugTheory',JSON.stringify(TH));
+  localStorage.setItem('jugLiveHistory','[]');
+  ['jugTheory_tg','jugTheory_tdiff','jugTheory_tmax'].forEach(k=>localStorage.removeItem(k));
+ }catch(e){}
+ ['tg','tdiff','tmax'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=id==='tmax'?'':'0'});
+ saveLiveHistory();
+ updateVisibleCounts();
+ drawTheory();
+ drawLiveSignal();
+}}
 function loadTheory(){['tg','tdiff','tmax'].forEach(id=>{let v=localStorage.getItem('jugTheory_'+id);if(v!==null)document.getElementById(id).value=v});['tdiff','tmax'].forEach(id=>document.getElementById(id).addEventListener('change',()=>{drawTheory();tstore()}));drawTheory()}
 
 let LIVE_HISTORY=[];
