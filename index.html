@@ -276,7 +276,7 @@ nav,footer{background:#080a0d!important}
 <div><label>チェリー重複BIG（任意）</label><input id="cbb" type="number" min="0" placeholder="任意"></div><div><label>単独REG（任意）</label><input id="srb" type="number" min="0" placeholder="未入力ならREG−重複REG"></div><div><label>単独BIG（任意）</label><input id="sbb" type="number" min="0" placeholder="未入力ならBIG−重複BIG"></div>
 </div><br>
 <div class="flex">
-  <button style="flex:1" onclick="calc()">設定を推測する</button>
+  <button type="button" id="calcEstimateBtn" style="flex:1" onclick="calc()">設定を推測する</button>
   <button class="danger" type="button" onclick="resetEstimate()">入力をリセット</button>
 </div>
 </div><div id="out"></div></section>
@@ -284,7 +284,7 @@ nav,footer{background:#080a0d!important}
 <div class="card"><div class="muted">実戦カウンター ＋ 展開分析</div><div class="analyzer-brand-row">
 <img src="icon-192.png" alt="" class="analyzer-brand-icon">
 <div class="analyzer-brand-title"><span>★</span> JUGGLER ANALYZER <span>★</span></div></div>
-<div class="muted" id="liveModelDisplay" style="margin-bottom:3px;color:#d6b15c;font-weight:700"></div><div class="muted" style="font-weight:800;letter-spacing:.08em">LIVE COUNTER × 展開分析 <span style="font-size:10px;color:#7f8994">v23.5</span></div><div class="muted">ここだけ操作すれば、通常カウントと展開分析へ同時に記録します。</div></div>
+<div class="muted" id="liveModelDisplay" style="margin-bottom:3px;color:#d6b15c;font-weight:700"></div><div class="muted" style="font-weight:800;letter-spacing:.08em">LIVE COUNTER × 展開分析 <span style="font-size:10px;color:#7f8994">v23.5.1</span></div><div class="muted">ここだけ操作すれば、通常カウントと展開分析へ同時に記録します。</div></div>
 <div class="card"><div class="grid">
 <div><label>開始時 総ゲーム数</label><input id="liveStartG" type="number" min="0" value="0"></div>
 <div><label>現在 総ゲーム数</label><input id="liveG" type="number" min="0" value="0"><button type="button" class="mini-g-sync" onclick="syncCurrentG()">台のG数に補正</button><div class="g-quick-row"><button type="button" onclick="advanceBlankG(5)">＋5G</button><button type="button" onclick="advanceBlankG(10)">＋10G</button><button type="button" onclick="advanceBlankG(15)">＋15G</button><button type="button" onclick="advanceBlankG(20)">＋20G</button><button type="button" onclick="advanceBlankG(25)">＋25G</button></div></div>
@@ -439,7 +439,9 @@ function G(x){return document.getElementById(x).value}function ll(n,k,p){if(k<0|
 function reverseGrape(g,bb,rb,diff,pay,style){const rp=1/7.298*3;let cp,bp,pp;if(style==='random'){cp=1/51.99*2;bp=1/4608*14;pp=1/10186*10}else if(style==='full'){cp=1/34.66*2;bp=1/1024*14;pp=1/1024*10}else{cp=1/34.66*2;bp=0;pp=0}const other=g*(rp+cp+bp+pp);const need=diff+g*3-bb*pay[0]-rb*pay[1]-other;const cnt=need/8;return cnt>0?{cnt,p:g/cnt}:null}
 function nearest(arr,val){if(!arr||!val||!isFinite(val))return null;let bi=0,bd=1e99;arr.forEach((x,i)=>{const d=Math.abs(x-val);if(d<bd){bd=d;bi=i}});return bi+1}
 function factorLine(label,obs,arr,weight){if(!obs||!arr)return'';const n=nearest(arr,obs);let tone=n>=5?'good':n>=4?'warn':'';return `<div style="display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid #263244;padding:7px 0"><span>${label}</span><span class="${tone}">1/${obs.toFixed(2)} → 設定${n}付近 <span class="muted">重み${weight.toFixed(2)}</span></span></div>`}
-function calc(){const totalG=+G('g'),startG=+G('startG')||0,g=totalG-startG,bb=+G('bb'),rb=+G('rb'),d=+G('diff'),gr=+G('grape')||0,cbb=+G('cbb')||0,crb=+G('crb')||0,sbb=G('sbb')===''?Math.max(0,bb-cbb):+G('sbb'),srb=G('srb')===''?Math.max(0,rb-crb):+G('srb');if(!totalG||g<=0||bb+rb>g)return;if(crb>rb||cbb>bb)return alert('重複ボーナス回数が総ボーナス回数を超えています');const m=M[sel.value],useGrape=G('useGrape')!=='off',rev=useGrape?reverseGrape(g,bb,rb,d,m.pay,G('style')):null;const meta=META[sel.value]||{q:'C',grw:0,note:''};const cal=CALIB[sel.value]||{level:meta.q,basis:'',use:''};let L=m.b.map((x,i)=>0.48*ll(g,bb,1/x[0])+1.00*ll(g,rb,1/x[1]));
+function calc(){const totalG=+G('g'),startG=+G('startG')||0,g=totalG-startG,bb=+G('bb'),rb=+G('rb'),d=+G('diff'),gr=+G('grape')||0,cbb=+G('cbb')||0,crb=+G('crb')||0,sbb=G('sbb')===''?Math.max(0,bb-cbb):+G('sbb'),srb=G('srb')===''?Math.max(0,rb-crb):+G('srb');if(!totalG||g<=0||bb+rb>g)return;if(crb>rb||cbb>bb)return alert('重複ボーナス回数が総ボーナス回数を超えています');const m=M[sel.value];
+const useGrape=(document.getElementById('useGrape')?.value||'on')==='on';
+const rev=useGrape?reverseGrape(g,bb,rb,d,m.pay,G('style')):null;const meta=META[sel.value]||{q:'C',grw:0,note:''};const cal=CALIB[sel.value]||{level:meta.q,basis:'',use:''};let L=m.b.map((x,i)=>0.48*ll(g,bb,1/x[0])+1.00*ll(g,rb,1/x[1]));
 const det=DETAIL[sel.value];const hasCRB=G('crb')!=='';const hasSRB=G('srb')!==''||hasCRB;
 if(det&&det.srb&&hasSRB){L=L.map((v,i)=>v-1.00*ll(g,rb,1/m.b[i][1])+(det.dw.srb||0)*ll(g,srb,1/det.srb[i])+(hasCRB?(det.dw.crb||0)*ll(g,crb,1/det.crb[i]):0));}
 const ch=+G('cherry')||0;if(det?.ch&&ch>0&&(hasCRB||G('cbb')!=='')){const non=Math.max(0,ch-cbb-crb);L=L.map((v,i)=>v+(det.dw.ch||0)*ll(g,non,1/det.ch[i]));}
@@ -455,20 +457,21 @@ function syncEstimateStart(){
  const a=document.getElementById('startG'),b=document.getElementById('liveStartG'),g=document.getElementById('liveG');if(!a||!b)return;
  b.value=Number(a.value)||0;if(TH.events.length===0&&g)g.value=Number(a.value)||0;persistAll();
 }
-function resetEstimate(){const da=document.getElementById('diffAbs'),ds=document.getElementById('diffSign');if(da)da.value='';if(ds)ds.value='+';
+function resetEstimate(){
  if(!confirm('設定推測の入力内容をすべてリセットしますか？'))return;
+ const da=document.getElementById('diffAbs'),ds=document.getElementById('diffSign');if(da)da.value='';if(ds)ds.value='+';
  ['startG','g','bb','rb','diff','grape','cherry','crb','cbb','srb','sbb'].forEach(id=>{
    const e=document.getElementById(id); if(e)e.value='';
  });
- const st=document.getElementById('style'); if(st)st.value='cherry'; const ug=document.getElementById('useGrape');if(ug){ug.value='on';localStorage.setItem('jugUseGrape','on');}
+ const st=document.getElementById('style'); if(st)st.value='cherry'; const ug=document.getElementById('useGrape');if(ug){ug.value='on';}
  const out=document.getElementById('out'); if(out)out.innerHTML='';
  ['model','startG','g','bb','rb','diff','grape','cherry','crb','cbb','srb','sbb','style'].forEach(id=>{
    try{localStorage.removeItem('jug_'+id)}catch(e){}
  });
 }
 
-function save(){['model','startG','g','bb','rb','diff','grape','cherry','crb','cbb','srb','sbb','style'].forEach(id=>localStorage.setItem('jug_'+id,G(id)))}
-function load(){['model','startG','g','bb','rb','diff','grape','cherry','crb','cbb','srb','sbb','style'].forEach(id=>{let v=localStorage.getItem('jug_'+id);if(v!==null&&document.getElementById(id))document.getElementById(id).value=v})}
+function save(){['model','startG','g','bb','rb','diff','grape','cherry','crb','cbb','srb','sbb','style','useGrape'].forEach(id=>localStorage.setItem('jug_'+id,G(id)))}
+function load(){['model','startG','g','bb','rb','diff','grape','cherry','crb','cbb','srb','sbb','style','useGrape'].forEach(id=>{let v=localStorage.getItem('jug_'+id);if(v!==null&&document.getElementById(id))document.getElementById(id).value=v})}
 
 /* 展開分析：独自理論は設定推測から分離し、観測データとして検証 */
 let TH=JSON.parse(localStorage.getItem('jugTheoryV1')||'null')||{events:[],signals:[],bonuses:[]};
@@ -951,9 +954,4 @@ setTimeout(loadSignedDiffFromHidden,0);
  });
 })();
 
-(function(){
- const e=document.getElementById('useGrape');if(!e)return;
- const saved=localStorage.getItem('jugUseGrape');if(saved==='off'||saved==='on')e.value=saved;
- e.addEventListener('change',()=>localStorage.setItem('jugUseGrape',e.value));
-})();
 </script><div id="liveHistoryModal" class="history-modal"><div class="history-sheet"><div class="history-head"><b>小役履歴・判定</b><button type="button" onclick="closeLiveHistory()">閉じる</button></div><div id="liveHistoryList" class="history-list"></div></div></div></body></html>
